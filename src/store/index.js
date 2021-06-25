@@ -1,16 +1,23 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createAuth0Client from '@auth0/auth0-spa-js';
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:7070/v1/graphql'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    auth0: null
+    auth0: null,
+    players: []
   },
   mutations: {
     setAuthenticationInstance (state, auth0) {
       state.auth0 = auth0;
+    },
+    updatePlayers (state, players) {
+      state.players = players;
     }
   },
   actions: {
@@ -38,6 +45,49 @@ export default new Vuex.Store({
     },
     login ({ state }) {
       state.auth0.loginWithRedirect()
+    },
+    async getPlayers ({ commit }) {
+      const result = await axios.post(
+        '',
+        {
+          query: `
+            query {
+              players: dim_player {
+                playerName: player_name
+                playerId: player_id
+              }
+            }
+          `
+        }
+      ).catch(() => alert('Error fetching from API'))
+
+      console.log(result)
+
+      commit('updatePlayers', result.data.data.players)
+    },
+    async getPlayersToken ({ commit, state }) {
+      const claims = await state.auth0.getIdTokenClaims()
+      console.log(claims)
+      const result = await axios.post(
+        '',
+        {
+          query: `
+            query {
+              players: dim_player {
+                playerName: player_name
+                playerId: player_id
+              }
+            }
+          `
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${claims.__raw}`
+          }
+        }
+      ).catch(() => alert('Error fetching from API'))
+
+      commit('updatePlayers', result.data.data.players)
     }
   },
   modules: {

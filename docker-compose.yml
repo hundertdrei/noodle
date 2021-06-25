@@ -1,0 +1,39 @@
+version: "3.3"
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    container_name: noodle-app
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+  
+  postgres:
+    container_name: noodle-db
+    build:
+      context: ./db
+    env_file:
+      - ./.env.test
+    networks:
+      - noodle
+    ports:
+      - 5432:5432
+    
+  graphql:
+    container_name: noodle-api
+    restart: always
+    build:
+      context: ./graphql
+    depends_on:
+      - postgres
+    networks:
+      - noodle
+    ports:
+      - 7070:8080
+    env_file:
+      - .env.test
+
+networks:
+  noodle:
