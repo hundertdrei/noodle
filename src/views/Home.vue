@@ -1,24 +1,28 @@
 <template>
-  <div class="home">
-    <div v-for="player in players" :key="player.playerId">
-      {{ player.playerName }}
+  <div class="container">
+    <div class="row">
+      <div class="col s4">
+        <NextTrainings />
+      </div>
+      <div class="col s8">
+        <Player />
+        <Calendar />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import NextTrainings from "@/components/NextTrainings"
+import Player from "@/components/Player"
+import Calendar from "@/components/Calendar"
 
 export default {
-  name: 'Home',
-  computed: {
-    ...mapState(['players'])
+  name: "Home",
+  components: {
+    NextTrainings,
+    Player,
+    Calendar
   },
-  methods: {
-    ...mapActions(['getPlayers'])
-  },
-  created () {
-    this.getPlayers()
-  }
-}
+};
 </script>

@@ -1,32 +1,34 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/admin">Admin</router-link>
+  <nav>
+    <div class="nav-wrapper brown">
+      <a href="#" class="brand-logo right">Logo</a>
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <li><router-link to="/">Home</router-link> </li>
+        <li><router-link to="/admin">Admin</router-link></li>
+      </ul>
     </div>
+  </nav>
+
     <router-view/>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<style lang="scss">
 
-#nav {
-  padding: 30px;
-}
+$secondary-color: brown;
 
-#nav a {
+@import '~materialize-css';
+@import '~material-design-icons/iconfont/material-icons.css';
+
+.text-bold {
   font-weight: bold;
-  color: #2c3e50;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+hr {
+  background-color: #e0e0e0;
+  border: 0;
+  height: 1px;
+  margin: 0.7em 0;
 }
 </style>
