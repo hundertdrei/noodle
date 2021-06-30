@@ -1,7 +1,11 @@
 <template>
-  <div class="login">
-    <h1>This is a login page</h1>
-    <button @click="login">Login</button>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Login</span>
+        <button @click="login">Login with Auth0</button>
+      </div>
+    </div>
   </div>
 </template>
 

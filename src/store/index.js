@@ -20,7 +20,8 @@ export default new Vuex.Store({
     player: null,
     nextTrainings: [],
     trainings: [],
-    attendance: []
+    attendance: [],
+    courses: []
   },
   getters: {
     calendar (state) {
@@ -69,6 +70,9 @@ export default new Vuex.Store({
         if (a == -1) state.nextTrainings[t].attendees.push({attend, player})
         else Vue.set(state.nextTrainings[t].attendees, a, {attend, player})
       }
+    },
+    updateCourses (state, courses) {
+      state.courses = courses;
     }
   },
   actions: {
@@ -86,8 +90,10 @@ export default new Vuex.Store({
     async handleRedirectCallback ({ state }) {
       await state.auth0.handleRedirectCallback()
     },
-    async isAuthenticated ({ state }) {
-      return await state.auth0.isAuthenticated()
+    isAuthenticated () {
+    //async isAuthenticated ({ state }) {
+      return true;
+      // return await state.auth0.isAuthenticated()
     },
     logout ({ state }) {
       state.auth0.logout({
@@ -98,10 +104,12 @@ export default new Vuex.Store({
       state.auth0.loginWithRedirect()
     },
     getNextTrainings ({ commit }) {
+      let lower = dayjs().format('YYYY-MM-DD')
+      console.log(lower)
        axios.post('', {
          query: `
          query {
-          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'2021-06-26'"}}, limit: 5) {
+          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'"}}, limit: 5) {
             location
             timeBegin: time_begin
             timeEnd: time_end
@@ -128,10 +136,11 @@ export default new Vuex.Store({
        }).then(res => commit('updateNextTrainings', res.data.data.trainings))
     },
     getTrainings ({ commit }) {
+      let lower = dayjs().format('YYYY-MM-DD')
       axios.post('', {
         query: `
         query {
-          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'2021-06-26'", _lte: "'2021-09-01'"}}) {
+          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'", _lte: "'2021-09-01'"}}) {
             location
             timeBegin: time_begin
             timeEnd: time_end
@@ -275,7 +284,29 @@ export default new Vuex.Store({
       )
       commit('updatePlayer', res.data.data.player.returning[0])
       commit('addPlayer', res.data.data.player.returning[0])
-      
+    },
+    getCourses ({ commit }) {
+      axios.post(
+        '',
+        {
+          query: `
+          query {
+            courses: dim_course {,
+              courseId: course_id
+              title
+              titleShort: title_short
+              location
+              timeBegin: time_begin
+              timeEnd: time_end
+              dateBegin: date_begin
+              dateEnd: date_end
+              comment
+            }
+          }
+          `
+        }
+      )
+      .then(res => commit('updateCourses', res.data.data.courses))
     }
   },
   modules: {

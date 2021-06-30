@@ -1,8 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Admin from '../views/Admin.vue'
-import Login from '../views/Login.vue'
+import Home from '@/views/Home.vue'
+import Admin from '@/views/Admin.vue'
+
+import AdminCourse from '@/components/AdminCourse.vue'
+import AdminOverview from '@/components/AdminOverview.vue'
+
+
+import Login from '@/views/Login.vue'
 import store from '@/store'
 
 
@@ -23,7 +28,18 @@ const routes = [
       if (await store.dispatch('isAuthenticated')) next()
       else next("/login")
     },
-    component: Admin
+    component: Admin,
+    children: [
+      {
+        path: '',
+        component: AdminOverview
+      },
+      {
+        path: 'course/:id',
+        component: AdminCourse,
+        props: true
+      }
+    ]
   },
   {
     path: '/login',

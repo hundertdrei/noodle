@@ -1,16 +1,24 @@
 <template>
-  <div class="admin">
-    <h1>This is an admin page</h1>
-    <button @click="logout">Logout</button>
+  <div class="container">
+    <div class="row">
+      <button @click="logout">Logout</button>
+    </div>
+    <router-view/>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   methods: {
-    logout () {
-      this.$store.dispatch('logout');
-    }
-  }
-}
+    ...mapActions(["getCourses"]),
+    logout() {
+      this.$store.dispatch("logout");
+    },
+  },
+  created() {
+    this.getCourses();
+  },
+};
 </script>

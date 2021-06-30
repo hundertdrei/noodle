@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <nav>
-    <div class="nav-wrapper brown">
+    <div class="nav-wrapper green">
       <a href="#" class="brand-logo right">Logo</a>
       <ul id="nav-mobile" class="left hide-on-med-and-down">
         <li><router-link to="/">Home</router-link> </li>
@@ -16,7 +16,7 @@
 
 <style lang="scss">
 
-$secondary-color: brown;
+$secondary-color: green;
 
 @import '~materialize-css';
 @import '~material-design-icons/iconfont/material-icons.css';
@@ -30,5 +30,9 @@ hr {
   border: 0;
   height: 1px;
   margin: 0.7em 0;
+}
+
+nav {
+  margin-bottom: 2em;
 }
 </style>
