@@ -1,25 +1,43 @@
 <template>
   <div id="app">
-  <nav>
-    <div class="nav-wrapper green">
-      <a href="#" class="brand-logo right">Logo</a>
-      <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><router-link to="/">Home</router-link> </li>
-        <li><router-link to="/admin">Admin</router-link></li>
-      </ul>
-    </div>
-  </nav>
+    <nav>
+      <div class="nav-wrapper green">
+        <a href="#" class="brand-logo right">Logo</a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"
+          ><i class="material-icons">menu</i></a
+        >
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+          <li><router-link to="/">Home</router-link></li>
+          <li><router-link to="/admin">Admin</router-link></li>
+        </ul>
+      </div>
+    </nav>
 
-    <router-view/>
+    <ul class="sidenav" ref="sidenav" id="mobile-demo">
+      <li><router-link to="/">Home</router-link></li>
+      <li><router-link to="/admin">Admin</router-link></li>
+    </ul>
+
+    <router-view />
   </div>
 </template>
 
-<style lang="scss">
+<script>
+import M from "materialize-css";
 
+export default {
+  mounted () {
+    let elem = this.$refs["sidenav"];
+    M.Sidenav.init(elem);
+  },
+};
+</script>
+
+<style lang="scss">
 $secondary-color: green;
 
-@import '~materialize-css';
-@import '~material-design-icons/iconfont/material-icons.css';
+@import "~materialize-css";
+@import "~material-design-icons/iconfont/material-icons.css";
 
 .text-bold {
   font-weight: bold;

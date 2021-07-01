@@ -5,6 +5,7 @@ import Admin from '@/views/Admin.vue'
 
 import AdminCourse from '@/components/AdminCourse.vue'
 import AdminOverview from '@/components/AdminOverview.vue'
+import AdminCourseForm from '@/components/AdminCourseForm.vue'
 
 
 import Login from '@/views/Login.vue'
@@ -21,7 +22,6 @@ const routes = [
   },
   {
     path: '/admin',
-    name: 'Admin',
     async beforeEnter (to, from, next) {
       await store.dispatch('initAuthentication')
 
@@ -35,10 +35,19 @@ const routes = [
         component: AdminOverview
       },
       {
+        path: 'course/new',
+        component: AdminCourseForm
+      },
+      {
         path: 'course/:id',
         component: AdminCourse,
         props: true
-      }
+      },
+      {
+        path: 'course/:id/edit',
+        component: AdminCourseForm,
+        props: true
+      },
     ]
   },
   {

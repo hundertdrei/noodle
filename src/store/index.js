@@ -105,7 +105,6 @@ export default new Vuex.Store({
     },
     getNextTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
-      console.log(lower)
        axios.post('', {
          query: `
          query {
@@ -300,6 +299,7 @@ export default new Vuex.Store({
               timeEnd: time_end
               dateBegin: date_begin
               dateEnd: date_end
+              dayOfWeek: day_of_week
               comment
             }
           }
@@ -307,6 +307,46 @@ export default new Vuex.Store({
         }
       )
       .then(res => commit('updateCourses', res.data.data.courses))
+    },
+    async saveCourse (_, course) {
+      let object = {
+        title: course.title,
+        title_short: course.titleShort,
+        date_begin: course.dateBegin,
+        date_end: course.dateEnd,
+        time_begin: course.timeBegin,
+        time_end: course.timeEnd,
+        comment: course.comment,
+        location: course.location,
+        day_of_week: course.dayOfWeek
+      };
+
+      if (course.courseId) {
+        object.courseId = course.courseId;
+      }
+
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation ($object: dim_course_insert_input! ) {
+            course: insert_dim_course_one (
+              object: $object,
+              on_conflict: {
+                constraint: dim_course_pkey,
+                update_columns: [title, title_short, date_begin, date_end, time_begin, time_end, location, comment]
+              }
+            ) {
+              courseId: course_id
+            }
+          }`,
+          variables: {
+            object: object
+          }
+        }
+      )
+
+      return res.data.data.course.courseId;
     }
   },
   modules: {

@@ -15,6 +15,7 @@ Vue.filter('timejs', (x, format) => {
 })
 
 Vue.filter('weekdayName', (x) => {
+  if (x === undefined) return x;
   return dayjs().isoWeekday(x).format("dddd")
 })
 
