@@ -47,9 +47,10 @@ export default {
   },
   mounted() {
     var elems = this.$refs["autocomplete"];
+    const event = new Event('input');
     let instances = M.Autocomplete.init(elems, {
       data: this.choices,
-      onAutocomplete: (value) => this.player = value
+      onAutocomplete: () => elems.dispatchEvent(event)
     });
     this.autocomplete = instances;
   },

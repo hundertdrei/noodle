@@ -11,14 +11,29 @@
       </div>
       <div class="card-action">
         <router-link class="green-text" :to="`/admin/course/${course.courseId}/edit`">Bearbeiten</router-link>
-        <a href="#" class="red-text">Löschen</a>
+        <a class="blue-text" @click="fillTrainings(course.courseId)">Termine füllen</a>
+        <a class="red-text" @click="deleteCourseLocal(course.courseId)">Löschen</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Termine</span>
+        <ul class="collection">
+          <li  v-for="training in course.trainings" :key="training.trainingId" class="collection-item">
+          {{ training.trainingDate | dayjs('dddd, DD.MM.YYYY')}}
+          <span class="secondary-content"><i class="material-icons">more_vert</i></span>
+          </li>
+          <li v-if="course.trainings.length == 0" clasS="collection-item">
+            <i>Noch keine Termine vorhanden</i>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   props: ["id"],
@@ -30,5 +45,13 @@ export default {
       else return null;
     },
   },
+  methods: {
+    ...mapActions(['fillTrainings', 'deleteCourse']),
+    async deleteCourseLocal (courseId) {
+      await this.deleteCourse(courseId);
+
+      this.$router.push('/admin')
+    }
+  }
 };
 </script>

@@ -45,12 +45,14 @@
         </div>
         <div class="row">
           <div class="col s12">
+            <div class="input-field">
             <select id="day-of-week" class="select" v-model="values.dayOfWeek">
               <option v-for="d in 7" :key="d" :value="d">
                 {{ d | weekdayName }}
               </option>
             </select>
             <label for="day-of-week">Wochentag</label>
+          </div>
           </div>
         </div>
         <div class="row">
@@ -122,6 +124,8 @@
 import { mapState, mapActions } from "vuex";
 import M from "materialize-css";
 
+const event = new Event('input');
+
 export default {
   props: ["id"],
   data() {
@@ -162,10 +166,17 @@ export default {
   mounted() {
       setTimeout(function() {
         let datepicker = document.querySelectorAll(".datepicker");
-        M.Datepicker.init(datepicker, { format: "yyyy-mm-dd" });
+        M.Datepicker.init(datepicker, {
+          format: "yyyy-mm-dd",
+          onClose: () => datepicker.forEach(o => o.dispatchEvent(event))
+        });
 
         let timepicker = document.querySelectorAll(".timepicker");
-        M.Timepicker.init(timepicker, { format: "hh:MM", twelveHour: false });
+        M.Timepicker.init(timepicker, {
+          format: "hh:MM",
+          twelveHour: false,
+          onCloseEnd: () => timepicker.forEach(o => o.dispatchEvent(event))
+        });
 
         let select = document.querySelectorAll(".select");
         M.FormSelect.init(select);

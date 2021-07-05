@@ -73,6 +73,31 @@ export default new Vuex.Store({
     },
     updateCourses (state, courses) {
       state.courses = courses;
+    },
+    updateCourse(state, course) {
+      let i = state.courses.findIndex(o => o.courseId == course.courseId);
+
+      if (i == -1) state.courses.push(course)
+      else Vue.set(state.courses, i, course)
+    },
+    updateTraining(state, training) {
+      let i = state.courses.findIndex(o => o.courseId == training.courseId);
+
+      if (i == -1) {
+        console.log("could not find course")
+        return;
+      }
+      let j = state.courses[i].trainings.findIndex(o => o.trainingDate == training.trainingDate)
+
+      if (j == -1) state.courses[i].trainings.push(training)
+      else Vue.set(state.courses[i].trainings, j, training)
+    },
+    deleteCourse(state, courseId) {
+      let i = state.courses.findIndex(o => o.courseId == courseId);
+
+      if (i == -1) return;
+
+      Vue.delete(state.courses, i)
     }
   },
   actions: {
@@ -301,6 +326,9 @@ export default new Vuex.Store({
               dateEnd: date_end
               dayOfWeek: day_of_week
               comment
+              trainings: dim_trainings {
+                trainingDate: training_date
+              }
             }
           }
           `
@@ -308,7 +336,7 @@ export default new Vuex.Store({
       )
       .then(res => commit('updateCourses', res.data.data.courses))
     },
-    async saveCourse (_, course) {
+    async saveCourse ({commit}, course) {
       let object = {
         title: course.title,
         title_short: course.titleShort,
@@ -322,7 +350,7 @@ export default new Vuex.Store({
       };
 
       if (course.courseId) {
-        object.courseId = course.courseId;
+        object.course_id = course.courseId;
       }
 
       const res = await axios.post(
@@ -338,6 +366,18 @@ export default new Vuex.Store({
               }
             ) {
               courseId: course_id
+              title
+              titleShort: title_short
+              location
+              timeBegin: time_begin
+              timeEnd: time_end
+              dateBegin: date_begin
+              dateEnd: date_end
+              dayOfWeek: day_of_week
+              comment,
+              trainings: dim_training {
+                date
+              }
             }
           }`,
           variables: {
@@ -345,6 +385,84 @@ export default new Vuex.Store({
           }
         }
       )
+      console.log(res);
+      commit('updateCourse', res.data.data.course)
+      return res.data.data.course.courseId;
+    },
+    fillTrainings({state, dispatch}, courseId) {
+      let course = state.courses.filter(o => o.courseId == courseId)[0]
+
+      let startDate = dayjs(course.dateBegin);
+      let endDate = dayjs(course.dateEnd);
+      
+      let d = startDate.isoWeekday(course.dayOfWeek);
+
+      if (d < startDate) d = d.add(7, 'day');
+      
+      while (d < endDate) {
+        dispatch('addTraining', {courseId, date: d.format('YYYY-MM-DD')})
+        d = d.add(7, 'day');
+      }
+    },
+    addTraining({state, commit}, {courseId, date}) {
+      let i = state.courses.findIndex(o => o.courseId == courseId)
+      if (i == -1) return;
+
+      let j = state.courses[i].trainings.findIndex(o => o.trainingDate == date)
+      if (j != -1) return;
+
+      let object = {
+        training_date: date,
+        course_id: courseId
+      }
+
+      axios.post(
+        '',
+        {
+          query: `
+          mutation ($object: dim_training_insert_input! ) {
+            training: insert_dim_training_one(
+              object: $object,
+              on_conflict: {
+                constraint: dim_training_pkey,
+                update_columns: [course_id, training_date]
+              }
+            ) {
+              trainingDate: training_date
+              trainingId: training_id
+              timeEnd: time_end
+              timeBegin: time_begin
+              location
+              cancelled
+              comment
+              courseId: course_id
+            }
+          }        
+          `,
+          variables: {
+            object: object
+          }
+        }
+      )
+      .then(res => {
+        console.log(res)
+        commit('updateTraining', res.data.data.training)
+      })
+    },
+    async deleteCourse ({commit}, courseId) {
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation  {
+            course: delete_dim_course_by_pk(course_id: ${courseId}) {
+              courseId: course_id
+            }
+          }
+          `
+        }
+      )
+      commit('deleteCourse', res.data.data.course.courseId)
 
       return res.data.data.course.courseId;
     }

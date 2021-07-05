@@ -53,4 +53,8 @@ hr {
 nav {
   margin-bottom: 2em;
 }
+
+a {
+  cursor: pointer;
+}
 </style>
