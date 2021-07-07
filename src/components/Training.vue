@@ -5,7 +5,13 @@
       <div class="text-bold">{{ data.trainingDate | dayjs('ddd, D.M YYYY') }}</div>
       <hr>
       <div>{{ data.course.location }}</div>
-      <div>{{ data.course.timeBegin | timejs('H:mm') }} - {{ data.course.timeEnd | timejs('H:mm')}}</div>
+      <div>
+        <span :class="{strike: data.timeBegin != data.courseTimeBegin}">{{ data.course.timeBegin | timejs('H:mm') }}</span>
+        <span v-if="data.timeBegin != data.courseTimeBegin">{{ data.course.timeBegin | timejs('H:mm') }}</span>
+         - 
+        <span :class="{strike: data.timeEnd != data.coursetimeEnd}">{{ data.course.timeEnd | timejs('H:mm') }}</span>
+        <span v-if="data.timeEnd != data.coursetimeEnd">{{ data.course.timeEnd | timejs('H:mm') }}</span>
+      </div>
       <div>{{ data.course.comment }}</div>
       <hr>
       <div class="green-text">
@@ -38,3 +44,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.strike {
+    text-decoration: line-through;
+
+}
+</style>

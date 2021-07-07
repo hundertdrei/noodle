@@ -3,7 +3,8 @@
     <div class="card-content">
       <div class="input-field">
         <i class="material-icons prefix">face</i>
-        <input v-model="player" type="text" id="autocomplete-input" class="autocomplete"  ref="autocomplete"/>
+        <input v-model="player" type="text" id="autocomplete-input" class="autocomplete"  ref="autocomplete"
+        autocomplete="off"/>
         <label for="autocomplete-input">Spieler*in</label>
       </div>
     </div>

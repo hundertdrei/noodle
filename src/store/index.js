@@ -87,7 +87,7 @@ export default new Vuex.Store({
         console.log("could not find course")
         return;
       }
-      let j = state.courses[i].trainings.findIndex(o => o.trainingDate == training.trainingDate)
+      let j = state.courses[i].trainings.findIndex(o => o.trainingId == training.trainingId)
 
       if (j == -1) state.courses[i].trainings.push(training)
       else Vue.set(state.courses[i].trainings, j, training)
@@ -98,6 +98,17 @@ export default new Vuex.Store({
       if (i == -1) return;
 
       Vue.delete(state.courses, i)
+    },
+    deleteTraining(state, {courseId, trainingId }) {
+      let i = state.courses.findIndex(o => o.courseId == courseId);
+
+      if (i == -1) return;
+
+      let j = state.courses[i].trainings.findIndex(o => o.trainingId == trainingId)
+
+      if (j == -1) return
+
+      Vue.delete(state.courses[i].trainings, j)
     }
   },
   actions: {
@@ -327,7 +338,12 @@ export default new Vuex.Store({
               dayOfWeek: day_of_week
               comment
               trainings: dim_trainings {
+                courseId: course_id
+                trainingId: training_id
                 trainingDate: training_date
+                timeBegin: time_begin
+                timeEnd: time_end
+                location
               }
             }
           }
@@ -362,7 +378,7 @@ export default new Vuex.Store({
               object: $object,
               on_conflict: {
                 constraint: dim_course_pkey,
-                update_columns: [title, title_short, date_begin, date_end, time_begin, time_end, location, comment]
+                update_columns: [title, title_short, date_begin, date_end, time_begin, time_end, location, comment, day_of_week]
               }
             ) {
               courseId: course_id
@@ -375,8 +391,13 @@ export default new Vuex.Store({
               dateEnd: date_end
               dayOfWeek: day_of_week
               comment,
-              trainings: dim_training {
-                date
+              trainings: dim_trainings {
+                trainingDate: training_date
+                courseId: course_id
+                trainingId: training_id
+                timeBegin: time_begin
+                timeEnd: time_end
+                location
               }
             }
           }`,
@@ -385,7 +406,7 @@ export default new Vuex.Store({
           }
         }
       )
-      console.log(res);
+
       commit('updateCourse', res.data.data.course)
       return res.data.data.course.courseId;
     },
@@ -400,20 +421,31 @@ export default new Vuex.Store({
       if (d < startDate) d = d.add(7, 'day');
       
       while (d < endDate) {
-        dispatch('addTraining', {courseId, date: d.format('YYYY-MM-DD')})
+        let dateFormatted = d.format('YYYY-MM-DD')
+        let j = course.trainings.findIndex(o => o.trainingDate == dateFormatted)
+        if (j == -1) {
+          dispatch('addTraining', {courseId, trainingDate: dateFormatted})
+        }
         d = d.add(7, 'day');
       }
     },
-    addTraining({state, commit}, {courseId, date}) {
+    addTraining({state, commit}, {courseId, trainingDate, trainingId, comment, timeBegin, timeEnd, location}) {
       let i = state.courses.findIndex(o => o.courseId == courseId)
       if (i == -1) return;
 
-      let j = state.courses[i].trainings.findIndex(o => o.trainingDate == date)
-      if (j != -1) return;
+      let j = state.courses[i].trainings.findIndex(o => o.trainingId == trainingId)
 
       let object = {
-        training_date: date,
-        course_id: courseId
+        training_date: trainingDate,
+        course_id: courseId,
+        comment: comment || null,
+        time_begin: timeBegin || null,
+        time_end: timeEnd || null,
+        location: location || null
+      }
+
+      if (j != -1) {
+        object.training_id = state.courses[i].trainings[j].trainingId
       }
 
       axios.post(
@@ -425,7 +457,7 @@ export default new Vuex.Store({
               object: $object,
               on_conflict: {
                 constraint: dim_training_pkey,
-                update_columns: [course_id, training_date]
+                update_columns: [course_id, training_date, comment, time_begin, time_end, location]
               }
             ) {
               trainingDate: training_date
@@ -448,6 +480,27 @@ export default new Vuex.Store({
         console.log(res)
         commit('updateTraining', res.data.data.training)
       })
+    },
+    async deleteTraining ({commit}, trainingId) {
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation  {
+            training: delete_dim_training_by_pk(training_id: ${trainingId}) {
+              trainingId: training_id
+              courseId: course_id
+            }
+          }
+          `
+        }
+      )
+      commit('deleteTraining', {
+        trainingId: res.data.data.training.trainingId,
+        courseId: res.data.data.training.courseId
+      })
+
+      return res.data.data.training.trainingId;
     },
     async deleteCourse ({commit}, courseId) {
       const res = await axios.post(

@@ -1,0 +1,162 @@
+{
+  "version": 2,
+  "tables": [
+    {
+      "table": {
+        "schema": "public",
+        "name": "dim_course"
+      },
+      "array_relationships": [
+        {
+          "name": "dim_trainings",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "course_id",
+              "table": {
+                "schema": "public",
+                "name": "dim_training"
+              }
+            }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "course_id",
+              "title",
+              "title_short",
+              "date_begin",
+              "date_end",
+              "time_begin",
+              "time_end",
+              "day_of_week",
+              "location",
+              "comment"
+            ],
+            "filter": {}
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "dim_player"
+      },
+      "array_relationships": [
+        {
+          "name": "fact_attendances",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "player_id",
+              "table": {
+                "schema": "public",
+                "name": "fact_attendance"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "dim_training"
+      },
+      "object_relationships": [
+        {
+          "name": "dim_course",
+          "using": {
+            "foreign_key_constraint_on": "course_id"
+          }
+        }
+      ],
+      "array_relationships": [
+        {
+          "name": "fact_attendances",
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "training_id",
+              "table": {
+                "schema": "public",
+                "name": "fact_attendance"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "fact_attendance"
+      },
+      "object_relationships": [
+        {
+          "name": "dim_player",
+          "using": {
+            "foreign_key_constraint_on": "player_id"
+          }
+        },
+        {
+          "name": "dim_training",
+          "using": {
+            "foreign_key_constraint_on": "training_id"
+          }
+        }
+      ],
+      "insert_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "check": {},
+            "columns": [
+              "player_id",
+              "training_id",
+              "attend"
+            ],
+            "backend_only": false
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "attend",
+              "player_id",
+              "training_id"
+            ],
+            "filter": {}
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "attend",
+              "player_id",
+              "training_id"
+            ],
+            "filter": {},
+            "check": {}
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "filter": {}
+          }
+        }
+      ]
+    }
+  ]
+}

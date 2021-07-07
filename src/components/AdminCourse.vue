@@ -19,11 +19,8 @@
       <div class="card-content">
         <span class="card-title">Termine</span>
         <ul class="collection">
-          <li  v-for="training in course.trainings" :key="training.trainingId" class="collection-item">
-          {{ training.trainingDate | dayjs('dddd, DD.MM.YYYY')}}
-          <span class="secondary-content"><i class="material-icons">more_vert</i></span>
-          </li>
-          <li v-if="course.trainings.length == 0" clasS="collection-item">
+          <AdminTraining v-for="training in trainings" :key="training.trainingId" :training="training"/>
+          <li v-if="trainings.length == 0" clasS="collection-item">
             <i>Noch keine Termine vorhanden</i>
           </li>
         </ul>
@@ -34,9 +31,14 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import AdminTraining from '@/components/AdminTraining'
+import _ from 'lodash'
 
 export default {
   props: ["id"],
+  components: {
+    AdminTraining
+  },
   computed: {
     ...mapState(["courses"]),
     course() {
@@ -44,6 +46,10 @@ export default {
       if (f.length > 0) return f[0];
       else return null;
     },
+    trainings () {
+      if (this.course === null) return [];
+      return _.sortBy(this.course.trainings, "trainingDate")
+    }
   },
   methods: {
     ...mapActions(['fillTrainings', 'deleteCourse']),

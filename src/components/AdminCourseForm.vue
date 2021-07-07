@@ -2,7 +2,9 @@
   <div class="container">
     <div class="card">
       <div class="card-content">
-        <div class="card-title">{{ type == 'edit' ? 'Kurs bearbeiten' : 'Kurs erstellen' }}</div>
+        <div class="card-title">
+          {{ type == "edit" ? "Kurs bearbeiten" : "Kurs erstellen" }}
+        </div>
         <div class="row">
           <div class="col s12">
             <div class="input-field">
@@ -21,62 +23,23 @@
         </div>
         <div class="row">
           <div class="col s6">
-            <div class="input-field">
-              <input
-                v-model="values.dateBegin"
-                id="date-begin"
-                type="text"
-                class="datepicker"
-              />
-              <label for="date-begin">Startdatum</label>
-            </div>
+            <Datepicker v-model="values.dateBegin" label="Startdatum" />
           </div>
           <div class="col s6">
-            <div class="input-field">
-              <input
-                v-model="values.dateEnd"
-                id="date-end"
-                type="text"
-                class="datepicker"
-              />
-              <label for="date-end">Enddatum</label>
-            </div>
+            <Datepicker v-model="values.dateEnd" label="Enddatum" />
           </div>
         </div>
         <div class="row">
           <div class="col s12">
-            <div class="input-field">
-            <select id="day-of-week" class="select" v-model="values.dayOfWeek">
-              <option v-for="d in 7" :key="d" :value="d">
-                {{ d | weekdayName }}
-              </option>
-            </select>
-            <label for="day-of-week">Wochentag</label>
-          </div>
+            <Select label="Wochentag" :choices="weekdays" v-model="values.dayOfWeek"/>
           </div>
         </div>
         <div class="row">
           <div class="col s6">
-            <div class="input-field">
-              <input
-                v-model="values.timeBegin"
-                id="time-begin"
-                type="text"
-                class="timepicker"
-              />
-              <label for="time-begin">Startzeit</label>
-            </div>
+            <Timepicker v-model="values.timeBegin" label="Startzeit" />
           </div>
           <div class="col s6">
-            <div class="input-field">
-              <input
-                v-model="values.timeEnd"
-                id="time-end"
-                type="text"
-                class="timepicker"
-              />
-              <label for="time-end">Endzeit</label>
-            </div>
+            <Timepicker v-model="values.timeEnd" label="Endzeit" />
           </div>
         </div>
         <div class="row">
@@ -122,13 +85,26 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import M from "materialize-css";
-
-const event = new Event('input');
+import M from 'materialize-css'
+import Datepicker from "@/components/Datepicker";
+import Timepicker from "@/components/Timepicker";
+import Select from '@/components/Select'
+import dayjs from 'dayjs'
+import _ from 'lodash'
 
 export default {
   props: ["id"],
+  components: {
+    Datepicker,
+    Timepicker,
+    Select
+  },
   data() {
+    let weekdays = _.zipObject(
+      _.range(1, 8),
+      _.map(_.range(1, 8), o => dayjs().isoWeekday(o).format("dddd"))
+    )
+
     return {
       values: {
         title: "",
@@ -140,6 +116,7 @@ export default {
         comment: "",
         location: "",
       },
+      weekdays: weekdays
     };
   },
   watch: {
@@ -154,33 +131,14 @@ export default {
   },
   computed: {
     ...mapState(["courses"]),
-    type () {
-        return !this.course ? 'new' : 'edit';
+    type() {
+      return !this.course ? "new" : "edit";
     },
     course() {
       let f = this.courses.filter((o) => o.courseId == this.id);
       if (f.length > 0) return f[0];
       else return null;
     },
-  },
-  mounted() {
-      setTimeout(function() {
-        let datepicker = document.querySelectorAll(".datepicker");
-        M.Datepicker.init(datepicker, {
-          format: "yyyy-mm-dd",
-          onClose: () => datepicker.forEach(o => o.dispatchEvent(event))
-        });
-
-        let timepicker = document.querySelectorAll(".timepicker");
-        M.Timepicker.init(timepicker, {
-          format: "hh:MM",
-          twelveHour: false,
-          onCloseEnd: () => timepicker.forEach(o => o.dispatchEvent(event))
-        });
-
-        let select = document.querySelectorAll(".select");
-        M.FormSelect.init(select);
-      }, 100);
   },
   methods: {
     ...mapActions(["saveCourse"]),
@@ -190,12 +148,12 @@ export default {
       this.$router.push({ path: "/admin/course/" + courseId });
     },
     cancel() {
-        if (this.type == 'edit') {
-            this.$router.push({ path: "/admin/course/" + this.course.courseId });
-        }
-        if (this.type == 'new') {
-            this.$router.push({ path: "/admin/" });
-        }
+      if (this.type == "edit") {
+        this.$router.push({ path: "/admin/course/" + this.course.courseId });
+      }
+      if (this.type == "new") {
+        this.$router.push({ path: "/admin/" });
+      }
     },
   },
 };
