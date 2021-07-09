@@ -1,40 +1,70 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col s12">
-        <Datepicker v-model="values.trainingDate" label="Datum" />
+    <div class="training-grid">
+      <div class="full-width">
+        <div class="title">Datum</div>
+        <div class="value"><Datepicker v-model="values.trainingDate" /></div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col s6">
-        <Timepicker v-model="values.timeBegin" label="Startzeit" />
+      <div class="default">
+        <div class="title">Startzeit</div>
+        <div class="value" :class="{strike: overwrite.timeBegin}">{{ course.timeBegin | timejs('HH:mm')}}</div>
       </div>
-      <div class="col s6">
-        <Timepicker v-model="values.timeEnd" label="Endzeit" />
+      <div class="overwrite">
+        <label>
+          <input type="checkbox" class="filled-in" checked="checked" v-model="overwrite.timeBegin"/>
+          <span>Überschreiben</span>
+        </label>
       </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
+      <div class="form" v-if="overwrite.timeBegin">
+        <Timepicker v-model="values.timeBegin" />
+      </div>
+      <div class="default">
+        <div class="title">Endzeit</div>
+        <div class="value" :class="{strike: overwrite.timeEnd}"> {{ course.timeEnd | timejs('HH:mm')}}</div>
+      </div>
+      <div class="overwrite">
+        <label>
+          <input type="checkbox" class="filled-in" checked="checked" v-model="overwrite.timeEnd"/>
+          <span>Überschreiben</span>
+        </label>
+      </div>
+      <div class="form" v-if="overwrite.timeEnd">
+        <Timepicker v-model="values.timeEnd" />
+      </div>
+      <div class="default">
+        <div class="title">Ort</div>
+        <div class="value" :class="{strike: overwrite.location}">{{ course.location }}</div>
+      </div>
+      <div class="overwrite">
+        <label>
+          <input type="checkbox" class="filled-in" checked="checked" v-model="overwrite.location"/>
+          <span>Überschreiben</span>
+        </label>
+      </div>
+      <div class="form" v-if="overwrite.location">
         <div class="input-field">
           <input v-model="values.location" id="location" type="text" />
-          <label for="location">Ort</label>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
+      <div class="default">
+        <div class="title">Kommentar</div>
+        <div class="value" :class="{strike: overwrite.comment}">{{ course.comment }}</div>
+      </div>
+      <div class="overwrite">
+        <label>
+          <input type="checkbox" class="filled-in" checked="checked" v-model="overwrite.comment"/>
+          <span>Überschreiben</span>
+        </label>
+      </div>
+      <div class="form" v-if="overwrite.comment">
         <div class="input-field">
           <textarea
             v-model="values.comment"
             id="comment"
             class="materialize-textarea"
           />
-          <label for="comment">Kommentar</label>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
+      <div class="full-width">
         <button
           @click="addTrainingLocal"
           class="btn btn-small waves-effect waves-light"
@@ -52,23 +82,19 @@
           Löschen
         </button>
       </div>
-    </div>
   </div>
 </template>
 
 
 <script>
-import M from "materialize-css";
 import Datepicker from "@/components/Datepicker";
 import Timepicker from "@/components/Timepicker"
 import _ from "lodash";
 import { mapActions } from "vuex";
 
-const event = new Event("input");
-
 export default {
   name: "AdminTrainingForm",
-  props: ["training"],
+  props: ["training", "course"],
   components: {
     Datepicker,
     Timepicker
@@ -76,28 +102,28 @@ export default {
   data() {
     return {
       values: _.cloneDeep(this.training),
+      overwrite: _.mapValues(this.training, o => o !== null)
     };
   },
   methods: {
     ...mapActions(["addTraining", "deleteTraining"]),
     async addTrainingLocal() {
-      await this.addTraining(this.values);
+      let values = _.cloneDeep(this.values)
+
+      for (let k in this.overwrite) {
+        console.log(k)
+        if (!this.overwrite[k]) {
+          values[k] = null;
+        }
+      }
+
+      await this.addTraining(values);
       this.$emit("close");
     },
     async deleteTrainingLocal() {
       await this.deleteTraining(this.training.trainingId);
       this.$emit("close");
     },
-  },
-  mounted() {
-    setTimeout(function () {
-      let timepicker = document.querySelectorAll(".timepicker");
-      M.Timepicker.init(timepicker, {
-        format: "hh:MM",
-        twelveHour: false,
-        onCloseEnd: () => timepicker.forEach((o) => o.dispatchEvent(event)),
-      });
-    }, 100);
   },
 };
 </script>
@@ -110,4 +136,56 @@ export default {
 button + button {
   margin-left: 0.5em;
 }
-</style>>
+
+.training-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.default {
+  grid-column: 1;
+}
+
+.overwrite {
+  grid-column: 2;
+}
+
+.form {
+  grid-column: 3;
+}
+
+.form .input-field,
+.full-width .input-field {
+  margin: 0;
+}
+
+.full-width {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.default {
+  margin-bottom: 1em;
+}
+
+.default .title {
+  font-weight: bold;
+}
+
+.default .value.strike {
+  text-decoration: line-through;
+}
+
+.full-width {
+  margin-top: 1em;
+}
+
+.full-width .title {
+  font-weight: bold;
+}
+
+.full-width .value {
+  text-decoration: line-through;
+}
+</style>

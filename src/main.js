@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import dayjs from 'dayjs'
+import Alt from '@/components/Alt'
+
+Vue.component('Alt', Alt)
 
 Vue.config.productionTip = false
 

@@ -1,5 +1,4 @@
 <template>
-  <div class="container">
     <div class="card">
       <div class="card-content">
         <div class="card-title">
@@ -80,7 +79,6 @@
         </button>
       </div>
     </div>
-  </div>
 </template>
 
 <script>

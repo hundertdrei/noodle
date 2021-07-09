@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <div class="card" v-if="course">
       <div class="card-content">
         <span class="card-title">{{ course.title }} ({{ course.titleShort }})</span>
@@ -19,7 +19,7 @@
       <div class="card-content">
         <span class="card-title">Termine</span>
         <ul class="collection">
-          <AdminTraining v-for="training in trainings" :key="training.trainingId" :training="training"/>
+          <AdminTraining v-for="training in trainings" :key="training.trainingId" :training="training" :course="course"/>
           <li v-if="trainings.length == 0" clasS="collection-item">
             <i>Noch keine Termine vorhanden</i>
           </li>

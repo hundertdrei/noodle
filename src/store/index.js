@@ -150,6 +150,7 @@ export default new Vuex.Store({
             timeEnd: time_end
             trainingDate: training_date
             trainingId: training_id
+            comment
             course: dim_course {
               location
               title
@@ -344,6 +345,7 @@ export default new Vuex.Store({
                 timeBegin: time_begin
                 timeEnd: time_end
                 location
+                comment
               }
             }
           }
@@ -398,6 +400,7 @@ export default new Vuex.Store({
                 timeBegin: time_begin
                 timeEnd: time_end
                 location
+                comment
               }
             }
           }`,
@@ -429,23 +432,21 @@ export default new Vuex.Store({
         d = d.add(7, 'day');
       }
     },
-    addTraining({state, commit}, {courseId, trainingDate, trainingId, comment, timeBegin, timeEnd, location}) {
-      let i = state.courses.findIndex(o => o.courseId == courseId)
+    addTraining({state, commit}, training) {
+      let i = state.courses.findIndex(o => o.courseId == training.courseId)
       if (i == -1) return;
 
-      let j = state.courses[i].trainings.findIndex(o => o.trainingId == trainingId)
-
       let object = {
-        training_date: trainingDate,
-        course_id: courseId,
-        comment: comment || null,
-        time_begin: timeBegin || null,
-        time_end: timeEnd || null,
-        location: location || null
+        course_id: training.courseId,
+        training_date: training.trainingDate,
+        time_begin: training.timeBegin,
+        time_end: training.timeEnd,
+        location: training.location,
+        comment: training.comment,
       }
 
-      if (j != -1) {
-        object.training_id = state.courses[i].trainings[j].trainingId
+      if (training.trainingId) {
+        object.training_id = training.trainingId
       }
 
       axios.post(

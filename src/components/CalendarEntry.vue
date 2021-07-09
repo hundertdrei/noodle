@@ -12,10 +12,12 @@
       {{ data.trainingDate | dayjs("D.M.") }} {{ data.course.titleShort }}
     </div>
     <div>
-      {{ data.course.timeBegin | timejs("H:mm") }} -
-      {{ data.course.timeEnd | timejs("H:mm") }}
+        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/> -
+        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
     </div>
-    <div>{{ data.course.location }}</div>
+    <div>
+        <Alt :x="data.course.location" :y="data.location"/>
+    </div>
   </div>
 </template>
 
@@ -27,6 +29,11 @@ export default {
   props: ["data", "attend", "trainingId"],
   methods: {
       ...mapActions(["toggleAttendance"])
+  },
+  computed: {
+    formatTime () {
+      return function (x) { return this.$options.filters.timejs(x, "HH:mm") }
+    }
   }
 };
 </script>

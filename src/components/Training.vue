@@ -4,15 +4,17 @@
       <span class="card-title" style="font-size:1.250rem; line-height: 1.2em;">{{ data.course.title }}</span>
       <div class="text-bold">{{ data.trainingDate | dayjs('ddd, D.M YYYY') }}</div>
       <hr>
-      <div>{{ data.course.location }}</div>
       <div>
-        <span :class="{strike: data.timeBegin != data.courseTimeBegin}">{{ data.course.timeBegin | timejs('H:mm') }}</span>
-        <span v-if="data.timeBegin != data.courseTimeBegin">{{ data.course.timeBegin | timejs('H:mm') }}</span>
-         - 
-        <span :class="{strike: data.timeEnd != data.coursetimeEnd}">{{ data.course.timeEnd | timejs('H:mm') }}</span>
-        <span v-if="data.timeEnd != data.coursetimeEnd">{{ data.course.timeEnd | timejs('H:mm') }}</span>
+        <Alt :x="data.course.location" :y="data.location"/>
       </div>
-      <div>{{ data.course.comment }}</div>
+      <div>
+        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/>
+         - 
+        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
+      </div>
+      <div>
+        <Alt :x="data.course.comment" :y="data.comment"/>
+      </div>
       <hr>
       <div class="green-text">
         <div class="text-bold">Ich komme ({{ attending.length }})</div>
@@ -41,6 +43,9 @@ export default {
     notAttending() {
       return this.data.attendees.filter((o) => o.attend === false);
     },
+    formatTime () {
+      return function (x) { return this.$options.filters.timejs(x, "HH:mm") }
+    }
   },
 };
 </script>

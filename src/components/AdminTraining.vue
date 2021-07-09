@@ -4,7 +4,7 @@
     <span class="secondary-content">
       <i class="material-icons toggle-form" @click="toggleForm">more_vert</i>
     </span>
-    <AdminTrainingForm v-if="showForm" :training="training" @close="toggleForm"/>
+    <AdminTrainingForm v-if="showForm" :training="training" :course="course" @close="toggleForm"/>
   </li>
 </template>
 
@@ -17,7 +17,7 @@ export default {
   components: {
     AdminTrainingForm
   },
-  props: ["training"],
+  props: ["training", "course"],
   data() {
     return {
       showForm: false
