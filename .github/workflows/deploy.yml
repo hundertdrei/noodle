@@ -25,4 +25,13 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: whoami
+          script: |
+            cd ~/noodle
+            git pull
+            docker build -t noodle-app -f release.Dockerfile .
+            docker stop noodle-app || :
+            docker rm noodle-app || :
+            docker run --name noodle-app \
+              --restart unless-stopped \
+              -p 8080:80 \
+              noodle-app
