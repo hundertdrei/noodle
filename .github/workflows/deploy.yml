@@ -31,7 +31,8 @@ jobs:
             docker build -t noodle-app -f release.Dockerfile .
             docker stop noodle-app || :
             docker rm noodle-app || :
-            docker run --name noodle-app \
+            docker run -d \
+              --name noodle-app \
               --restart unless-stopped \
               -p 8080:80 \
               noodle-app
