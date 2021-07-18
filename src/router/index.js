@@ -11,21 +11,24 @@ import AdminCourseForm from '@/components/AdminCourseForm.vue'
 import Login from '@/views/Login.vue'
 import store from '@/store'
 
-
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    beforeEnter (to, from, next) {
+      store.dispatch('auth/isAuthenticated');
+      next();
+    }
   },
   {
     path: '/admin',
     async beforeEnter (to, from, next) {
-      await store.dispatch('initAuthentication')
+      await store.dispatch('auth/initAuthentication')
 
-      if (await store.dispatch('isAuthenticated')) next()
+      if (await store.dispatch('auth/isAuthenticated')) next()
       else next("/login")
     },
     component: Admin,
@@ -55,16 +58,16 @@ const routes = [
     name: 'Login',
     component: Login,
     async beforeEnter (to, from, next) {
-      await store.dispatch('initAuthentication')
-      if (await store.dispatch('isAuthenticated')) next("/admin")
+      await store.dispatch('auth/initAuthentication')
+      if (await store.dispatch('auth/isAuthenticated')) next("/admin")
       else next()
     }
   },
   {
     path: '/callback',
     async beforeEnter (to, from, next) {
-      await store.dispatch('initAuthentication')
-      await store.dispatch('handleRedirectCallback');
+      await store.dispatch('auth/initAuthentication')
+      await store.dispatch('auth/handleRedirectCallback');
 
       next('/admin')
     }

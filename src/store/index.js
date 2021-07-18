@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createAuth0Client from '@auth0/auth0-spa-js';
 import axios from 'axios';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import M from 'materialize-css'
+import auth from '@/store/auth'
+
 dayjs.extend(weekOfYear)
 dayjs.extend(isoWeek)
 
@@ -15,7 +17,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    auth0: null,
     players: [],
     player: null,
     nextTrainings: [],
@@ -36,9 +37,6 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    setAuthenticationInstance (state, auth0) {
-      state.auth0 = auth0;
-    },
     updatePlayers (state, players) {
       state.players = players;
     },
@@ -122,33 +120,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async initAuthentication ({ state, commit }) {
-      if (state.auth0 !== null) return;
-
-      const auth0 = await createAuth0Client({
-        domain: 'hundertdrei.eu.auth0.com',
-        client_id: '1bPFbQUwSBTqRQGjGeBQyLZLs8CItlbv',
-        redirect_uri: 'http://localhost:8080/callback'
-      });
-
-      commit("setAuthenticationInstance", auth0)
-    },
-    async handleRedirectCallback ({ state }) {
-      await state.auth0.handleRedirectCallback()
-    },
-    isAuthenticated () {
-    //async isAuthenticated ({ state }) {
-      return true;
-      // return await state.auth0.isAuthenticated()
-    },
-    logout ({ state }) {
-      state.auth0.logout({
-        returnTo: 'http://localhost:8080/'
-      })
-    },
-    login ({ state }) {
-      state.auth0.loginWithRedirect()
-    },
     getNextTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
        axios.post('', {
@@ -179,7 +150,9 @@ export default new Vuex.Store({
           }
         } 
          `
-       }).then(res => commit('updateNextTrainings', res.data.data.trainings))
+       })
+       .then(res => commit('updateNextTrainings', res.data.data.trainings))
+       .catch(() => alert('API ist nicht erreichbar'))
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
@@ -202,7 +175,9 @@ export default new Vuex.Store({
           }
         }
         `
-      }).then(res => commit('updateTrainings', res.data.data.trainings))
+      })
+      .then(res => commit('updateTrainings', res.data.data.trainings))
+      .catch(() => alert('API ist nicht erreichbar'))
     },
     getPlayerAttendance ({ commit, state }) {
       let player = state.player;
@@ -234,6 +209,7 @@ export default new Vuex.Store({
           commit('setPlayerAttendance', res.data.data.player[0].attendance)
         }
       })
+      .catch(() => alert('API ist nicht erreichbar'))
     },
     async getPlayers ({ commit }) {
       const result = await axios.post(
@@ -248,7 +224,9 @@ export default new Vuex.Store({
             }
           `
         }
-      ).catch(() => alert('Error fetching from API'))
+      )       
+      .catch(() => alert('API ist nicht erreichbar'))
+
 
       commit('updatePlayers', result.data.data.players)
     },
@@ -271,7 +249,8 @@ export default new Vuex.Store({
             Authorization: `Bearer ${claims.__raw}`
           }
         }
-      ).catch(() => alert('Error fetching from API'))
+      )
+      .catch(() => alert('API ist nicht erreichbar'))
 
       commit('updatePlayers', result.data.data.players)
     },
@@ -306,9 +285,11 @@ export default new Vuex.Store({
             }
           }`
         }
-      ).then(res => {
+      )
+      .then(res => {
         commit('updateAttendance', res.data.data.attendance.returning[0])
       })
+      .catch(() => alert('API ist nicht erreichbar'))
     },
     async savePlayer({ commit }, player) {
       if (!player.name || player.name.trim() == "") return;
@@ -343,6 +324,7 @@ export default new Vuex.Store({
           }
         }
       )
+      .catch(() => alert('API ist nicht erreichbar'))
 
       commit('updatePlayer', res.data.data.player)
       commit('addPlayer', res.data.data.player)
@@ -378,7 +360,10 @@ export default new Vuex.Store({
           `
         }
       )
-      .then(res => commit('updateCourses', res.data.data.courses))
+      .then(res => {
+        commit('updateCourses', res.data.data.courses)
+      })
+      .catch(() => alert('API ist nicht erreichbar'))
     },
     async saveCourse ({commit}, course) {
       let object = {
@@ -435,8 +420,12 @@ export default new Vuex.Store({
           }
         }
       )
+      .catch(() => alert('API ist nicht erreichbar'))
 
       commit('updateCourse', res.data.data.course)
+
+      M.toast({html: 'Kurs wurde aktualisiert', classes: 'green'})
+
       return res.data.data.course.courseId;
     },
     fillTrainings({state, dispatch}, courseId) {
@@ -504,8 +493,11 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
+        M.toast({html: 'Training wurde aktualisiert', classes: 'green'})
         commit('updateTraining', res.data.data.training)
       })
+      .catch(() => alert('API ist nicht erreichbar'))
+
     },
     async deleteTraining ({commit}, trainingId) {
       const res = await axios.post(
@@ -521,10 +513,14 @@ export default new Vuex.Store({
           `
         }
       )
+      .catch(() => alert('API ist nicht erreichbar'))
+
       commit('deleteTraining', {
         trainingId: res.data.data.training.trainingId,
         courseId: res.data.data.training.courseId
       })
+
+      M.toast({html: 'Training wurde gelöscht', classes: 'green'})
 
       return res.data.data.training.trainingId;
     },
@@ -541,7 +537,11 @@ export default new Vuex.Store({
           `
         }
       )
+      .catch(() => alert('API ist nicht erreichbar'))
+
       commit('deleteCourse', res.data.data.course.courseId)
+
+      M.toast({html: 'Kurs wurde gelöscht', classes: 'green'})
 
       return res.data.data.course.courseId;
     },
@@ -568,5 +568,6 @@ export default new Vuex.Store({
     },
   },
   modules: {
+    auth: auth
   }
 })

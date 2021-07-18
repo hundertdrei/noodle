@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-content">
       <span class="card-title" style="font-size:1.250rem; line-height: 1.2em;">{{ data.course.title }}</span>
-      <div class="text-bold">{{ data.trainingDate | dayjs('ddd, D.M YYYY') }}</div>
+      <div class="text-bold">{{ data.trainingDate | dayjs('ddd, D.M.YYYY') }}</div>
       <hr>
       <div>
         <Alt :x="data.course.location" :y="data.location"/>
@@ -17,15 +17,27 @@
       </div>
       <hr>
       <div class="green-text">
-        <div class="text-bold">Ich komme ({{ attending.length }})</div>
+        <div class="text-bold title-attending" @click="collapseAttending = !collapseAttending">
+          Ich komme ({{ attending.length }})
+          <span class="material-icons" v-if="collapseAttending">arrow_drop_down</span>
+          <span class="material-icons" v-else>arrow_drop_up</span>
+        </div>
+        <div v-if="!collapseAttending">
         <div v-for="attendee in attending" :key="attendee.playerId">
           {{ attendee.player.name }}
         </div>
+        </div>
       </div>
       <div class="red-text">
-        <div class="text-bold">Ich komme nicht ({{ notAttending.length }})</div>
+        <div class="text-bold title-attending" :class="{collapsed: collapseNotAttending}" @click="collapseNotAttending = !collapseNotAttending">
+          Ich komme nicht ({{ notAttending.length }})          
+          <span class="material-icons" v-if="collapseNotAttending">arrow_drop_down</span>
+          <span class="material-icons" v-else>arrow_drop_up</span>
+        </div>
+        <div v-if="!collapseNotAttending">
         <div v-for="attendee in notAttending" :key="attendee.playerId">
           {{ attendee.player.name }}
+        </div>
         </div>
       </div>
     </div>
@@ -36,6 +48,12 @@
 export default {
   name: "Training",
   props: ["data"],
+  data () {
+    return {
+      collapseAttending: false,
+      collapseNotAttending: true
+    }
+  },
   computed: {
     attending() {
       return this.data.attendees.filter((o) => o.attend === true);
@@ -53,6 +71,14 @@ export default {
 <style scoped>
 .strike {
     text-decoration: line-through;
+}
 
+.title-attending {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.title-attending .material-icons {
+  vertical-align: bottom;
 }
 </style>

@@ -15,7 +15,15 @@
         <a class="red-text" @click="deleteCourseLocal(course.courseId)">Löschen</a>
       </div>
     </div>
-    <div class="card">
+    <div class="card trainings">
+      <div class="card-image">
+        <a @click="addTrainingDialog" class="btn-floating halfway-fab waves-effect waves-light green">
+          <i class="material-icons">add</i>
+        </a>
+        <div class="new-training-date-container">
+         <input type="text" class="datepicker" ref="new-training-date">
+         </div>
+      </div>
       <div class="card-content">
         <span class="card-title">Termine</span>
         <ul class="collection">
@@ -33,9 +41,16 @@
 import { mapState, mapActions } from "vuex";
 import AdminTraining from '@/components/AdminTraining'
 import _ from 'lodash'
+import M from 'materialize-css'
+import dayjs from 'dayjs'
 
 export default {
   props: ["id"],
+  data () {
+    return {
+      newTrainingForm: null
+    }
+  },
   components: {
     AdminTraining
   },
@@ -52,12 +67,37 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fillTrainings', 'deleteCourse']),
+    ...mapActions(['fillTrainings', 'deleteCourse', "addTraining"]),
     async deleteCourseLocal (courseId) {
+      if (!confirm('Soll der Kurs inkl. aller Trainingstermine wirklich gelöscht werden?')) return;
+      
       await this.deleteCourse(courseId);
 
       this.$router.push('/admin')
+    },
+    addTrainingDialog() {
+      if (this.newTrainingForm === null) {
+        this.newTrainingForm = M.Datepicker.init(
+          this.$refs['new-training-date'],
+          {
+            onClose: () => {
+              let dateFormatted = dayjs(this.newTrainingForm.date).format("YYYY-MM-DD");
+              this.addTraining({courseId: this.id, trainingDate: dateFormatted})
+            }
+          })
+      }
+      this.newTrainingForm.open();
     }
-  }
+  },
 };
 </script>
+
+<style scoped>
+.trainings {
+  margin-top: 4em;
+}
+
+.new-training-date-container input {
+  display: none;
+}
+</style>

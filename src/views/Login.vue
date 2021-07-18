@@ -2,8 +2,10 @@
   <div class="container">
     <div class="card">
       <div class="card-content">
-        <span class="card-title">Login</span>
-        <button @click="login">Login with Auth0</button>
+        <a @click="login" class="btn waves-effect waves-light">
+          <i class="material-icons right">lock</i>
+            Login with Auth0
+        </a>
       </div>
     </div>
   </div>
@@ -13,8 +15,14 @@
 export default {
   methods: {
     login () {
-      this.$store.dispatch('login');
+      this.$store.dispatch('auth/login');
     }
   }
 }
 </script>
+
+<style scoped>
+.card-content {
+  text-align: center;
+}
+</style>

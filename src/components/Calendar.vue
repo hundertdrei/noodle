@@ -56,5 +56,6 @@ export default {
 <style scoped>
 td {
   padding: 0;
+  vertical-align: top;
 }
 </style>
