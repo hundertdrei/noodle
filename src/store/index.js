@@ -84,7 +84,6 @@ export default new Vuex.Store({
       let i = state.courses.findIndex(o => o.courseId == training.courseId);
 
       if (i == -1) {
-        console.log("could not find course")
         return;
       }
       let j = state.courses[i].trainings.findIndex(o => o.trainingId == training.trainingId)
@@ -109,6 +108,17 @@ export default new Vuex.Store({
       if (j == -1) return
 
       Vue.delete(state.courses[i].trainings, j)
+    },
+    deletePlayer(state, playerId) {
+      let i = state.players.findIndex(o => o.playerId == playerId);
+
+      if (i == -1) return;
+
+      Vue.delete(state.players, i)
+
+      if (this.player && this.player.playerId == playerId) {
+        this.player = null;
+      }
     }
   },
   actions: {
@@ -273,7 +283,7 @@ export default new Vuex.Store({
       if (!state.player || state.player.name.trim() == "") return;
       
       if (state.player.playerId == -1) {
-        await dispatch('createPlayer', state.player.name)
+        await dispatch('savePlayer', {name: state.player.name})
       }
 
       let attend = (old === false ? 'null' : !old)
@@ -300,26 +310,42 @@ export default new Vuex.Store({
         commit('updateAttendance', res.data.data.attendance.returning[0])
       })
     },
-    async createPlayer({ commit }, name) {
-      if (!name || name.trim() == "") return;
+    async savePlayer({ commit }, player) {
+      if (!player.name || player.name.trim() == "") return;
+
+      let object = {
+        name: player.name
+      };
+
+      if (player.playerId && player.playerId !== -1) {
+        object.player_id = player.playerId;
+      }
 
       const res = await axios.post(
         '',
         {
           query: `
-          mutation {
-            player: insert_dim_player(objects: {name: "${name}"}) {
-              returning {
-                name
-                playerId: player_id
+          mutation ($object: dim_player_insert_input!) {
+            player: insert_dim_player_one (
+              object: $object,
+              on_conflict: {
+                constraint: dim_player_pkey,
+                update_columns: [name]
               }
+            ) {
+              name
+              playerId: player_id
             }
           }
-          `
+          `,
+          variables: {
+            object: object
+          }
         }
       )
-      commit('updatePlayer', res.data.data.player.returning[0])
-      commit('addPlayer', res.data.data.player.returning[0])
+
+      commit('updatePlayer', res.data.data.player)
+      commit('addPlayer', res.data.data.player)
     },
     getCourses ({ commit }) {
       axios.post(
@@ -478,7 +504,6 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        console.log(res)
         commit('updateTraining', res.data.data.training)
       })
     },
@@ -519,7 +544,28 @@ export default new Vuex.Store({
       commit('deleteCourse', res.data.data.course.courseId)
 
       return res.data.data.course.courseId;
-    }
+    },
+    async deletePlayer ({commit, state}, playerId) {
+      if (!playerId || playerId === -1) return;
+
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation  {
+            player: delete_dim_player_by_pk(player_id: ${playerId}) {
+              playerId: player_id
+            }
+          }
+          `
+        }
+      )
+      commit('deletePlayer', res.data.data.player.playerId)
+
+      state.nextTrainings.map(o => commit('updateAttendance', {trainingId: o.trainingId, attend: null, player: {playerId}}))
+
+      return res.data.data.player.playerId;
+    },
   },
   modules: {
   }

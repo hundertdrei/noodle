@@ -111,7 +111,6 @@ export default {
       let values = _.cloneDeep(this.values)
 
       for (let k in this.overwrite) {
-        console.log(k)
         if (!this.overwrite[k]) {
           values[k] = null;
         }
