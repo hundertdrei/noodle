@@ -18,8 +18,9 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-    beforeEnter (to, from, next) {
-      store.dispatch('auth/isAuthenticated');
+    async beforeEnter (to, from, next) {
+      await store.dispatch('auth/initAuthentication')
+      await store.dispatch('auth/isAuthenticated');
       next();
     }
   },

@@ -31,12 +31,10 @@ export default {
     async handleRedirectCallback({ state }) {
       await state.auth0.handleRedirectCallback()
     },
-    // async isAuthenticated ({ state }) {
-    //   return await state.auth0.isAuthenticated()
-    // },
-    isAuthenticated({ commit }) {
-      commit('setAuthenticated', false)
-      return false;
+    async isAuthenticated ({ state, commit }) {
+      const authenticated = await state.auth0.isAuthenticated();
+      commit('setAuthenticated', authenticated)
+      return authenticated;
     },
     logout({ state }) {
       state.auth0.logout({
