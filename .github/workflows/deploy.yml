@@ -34,7 +34,5 @@ jobs:
             docker run -d \
               --name noodle-app \
               --restart unless-stopped \
-              -v /etc/nginx/nginx.conf:/etc/nginx/nginx.conf \
-              -v /etc/letsencrypt/live/noodlelab.de:/etc/letsencrypt/live/noodlelab.de \
               -p 8080:80 \
               noodle-app
