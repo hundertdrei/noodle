@@ -11,7 +11,7 @@ import auth from '@/store/auth'
 dayjs.extend(weekOfYear)
 dayjs.extend(isoWeek)
 
-axios.defaults.baseURL = 'http://localhost:7070/v1/graphql'
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.use(Vuex)
 

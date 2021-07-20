@@ -3,6 +3,8 @@ services:
   app:
     build:
       context: .
+    env_file:
+      - .env.local
     ports:
       - 8080:8080
     container_name: noodle-app
@@ -15,7 +17,7 @@ services:
     build:
       context: ./db
     env_file:
-      - ./.env.test
+      - .env.local
     networks:
       - noodle
     ports:
@@ -33,7 +35,7 @@ services:
     ports:
       - 7070:8080
     env_file:
-      - .env.test
+      - .env.local
 
 networks:
   noodle:
