@@ -21,9 +21,9 @@ export default {
       if (state.auth0 !== null) return;
 
       const auth0 = await createAuth0Client({
-        domain: 'hundertdrei.eu.auth0.com',
-        client_id: '1bPFbQUwSBTqRQGjGeBQyLZLs8CItlbv',
-        redirect_uri: 'http://localhost:8080/callback'
+        domain: process.env.VUE_APP_AUTH0_DOMAIN,
+        client_id: process.env.VUE_APP_AUTH0_CLIENT_ID,
+        redirect_uri: process.env.VUE_APP_AUTH0_REDIRECT_URL
       });
 
       commit("setAuthenticationInstance", auth0)
@@ -38,7 +38,7 @@ export default {
     },
     logout({ state }) {
       state.auth0.logout({
-        returnTo: 'http://localhost:8080/'
+        returnTo: process.env.VUE_APP_AUTH0_RETURN_URL
       })
     },
     login({ state }) {

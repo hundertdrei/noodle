@@ -31,6 +31,11 @@ apt-get install certbot
 certbot certonly --standalone
 ```
 
+## network
+```
+docker network create noodle
+```
+
 ## postgres
 
 ```
@@ -39,6 +44,7 @@ docker run -d \
   --restart unless-stopped \
   -p 5432:5432 \
   --name postgres \
+  --network noodle \
   postgres:13.3
 ```
 
@@ -49,5 +55,6 @@ docker run -d \
   --restart unless-stopped \
   -p 7070:8080 \
   --name hasura \
+  --network noodle \
   hasura/graphql-engine:latest
 ```
