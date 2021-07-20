@@ -47,7 +47,7 @@ docker run -d \
 docker run -d \
   --env-file /home/github/noodle/.env \
   --restart unless-stopped \
-  -p 8080:7070 \
+  -p 7070:8080 \
   --name hasura \
   hasura/graphql-engine:latest
 ```
