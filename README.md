@@ -30,3 +30,24 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 apt-get install certbot
 certbot certonly --standalone
 ```
+
+## postgres
+
+```
+docker run -d \
+  --env-file /home/github/noodle/.env \
+  --restart unless-stopped \
+  -p 5432:5432 \
+  --name postgres \
+  postgres:13.3
+```
+
+## hasura
+```
+docker run -d \
+  --env-file /home/github/noodle/.env \
+  --restart unless-stopped \
+  -p 8080:7070 \
+  --name hasura \
+  hasura/graphql-engine:latest
+```
