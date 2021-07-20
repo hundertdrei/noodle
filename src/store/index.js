@@ -34,6 +34,9 @@ export default new Vuex.Store({
     calendarDays (state) {
       let days = _.map(state.trainings, o => dayjs(o.trainingDate).isoWeekday())
       return _.uniq(days).sort();
+    },
+    apiToken (state, getters, rootState) {
+      return rootState.auth.apiToken;
     }
   },
   mutations: {
@@ -365,7 +368,7 @@ export default new Vuex.Store({
       })
       .catch(() => alert('API ist nicht erreichbar'))
     },
-    async saveCourse ({commit}, course) {
+    async saveCourse ({commit, getters}, course) {
       let object = {
         title: course.title,
         title_short: course.titleShort,
@@ -417,6 +420,11 @@ export default new Vuex.Store({
           }`,
           variables: {
             object: object
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
           }
         }
       )
@@ -447,7 +455,7 @@ export default new Vuex.Store({
         d = d.add(7, 'day');
       }
     },
-    addTraining({state, commit}, training) {
+    addTraining({state, commit, getters}, training) {
       let i = state.courses.findIndex(o => o.courseId == training.courseId)
       if (i == -1) return;
 
@@ -490,6 +498,11 @@ export default new Vuex.Store({
           variables: {
             object: object
           }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
+          }
         }
       )
       .then(res => {
@@ -499,7 +512,7 @@ export default new Vuex.Store({
       .catch(() => alert('API ist nicht erreichbar'))
 
     },
-    async deleteTraining ({commit}, trainingId) {
+    async deleteTraining ({commit, getters}, trainingId) {
       const res = await axios.post(
         '',
         {
@@ -511,6 +524,11 @@ export default new Vuex.Store({
             }
           }
           `
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
+          }
         }
       )
       .catch(() => alert('API ist nicht erreichbar'))
@@ -524,7 +542,7 @@ export default new Vuex.Store({
 
       return res.data.data.training.trainingId;
     },
-    async deleteCourse ({commit}, courseId) {
+    async deleteCourse ({commit, getters}, courseId) {
       const res = await axios.post(
         '',
         {
@@ -535,6 +553,11 @@ export default new Vuex.Store({
             }
           }
           `
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
+          }
         }
       )
       .catch(() => alert('API ist nicht erreichbar'))

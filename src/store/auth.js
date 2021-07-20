@@ -5,7 +5,8 @@ export default {
   state() {
     return {
       auth0: null,
-      authenticated: false
+      authenticated: false,
+      apiToken: null
     }
   },
   mutations: {
@@ -14,6 +15,9 @@ export default {
     },
     setAuthenticated(state, value) {
       state.authenticated = value;
+    },
+    setAPIToken(state, value) {
+      state.apiToken = value;
     }
   },
   actions: {
@@ -33,7 +37,11 @@ export default {
     },
     async isAuthenticated ({ state, commit }) {
       const authenticated = await state.auth0.isAuthenticated();
+      const claims = await state.auth0.getIdTokenClaims()
+
+      commit('setAPIToken', claims.__raw)
       commit('setAuthenticated', authenticated)
+
       return authenticated;
     },
     logout({ state }) {
