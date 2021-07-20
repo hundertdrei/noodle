@@ -37,9 +37,11 @@ export default {
     },
     async isAuthenticated ({ state, commit }) {
       const authenticated = await state.auth0.isAuthenticated();
-      const claims = await state.auth0.getIdTokenClaims()
 
-      commit('setAPIToken', claims.__raw)
+      if (authenticated) {
+        const claims = await state.auth0.getIdTokenClaims()
+        commit('setAPIToken', claims.__raw)
+      }
       commit('setAuthenticated', authenticated)
 
       return authenticated;
