@@ -15,6 +15,10 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.use(Vuex)
 
+function handle_api_error(error) {
+  alert("API ist nicht erreichbar: " + error);
+}
+
 export default new Vuex.Store({
   state: {
     players: [],
@@ -155,7 +159,7 @@ export default new Vuex.Store({
          `
        })
        .then(res => commit('updateNextTrainings', res.data.data.trainings))
-       .catch(() => alert('API ist nicht erreichbar'))
+       .catch(handle_api_error)
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
@@ -180,7 +184,7 @@ export default new Vuex.Store({
         `
       })
       .then(res => commit('updateTrainings', res.data.data.trainings))
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
     },
     getPlayerAttendance ({ commit, state }) {
       let player = state.player;
@@ -212,7 +216,7 @@ export default new Vuex.Store({
           commit('setPlayerAttendance', res.data.data.player[0].attendance)
         }
       })
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
     },
     async getPlayers ({ commit }) {
       const result = await axios.post(
@@ -228,7 +232,7 @@ export default new Vuex.Store({
           `
         }
       )       
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
 
       commit('updatePlayers', result.data.data.players)
@@ -253,7 +257,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
       commit('updatePlayers', result.data.data.players)
     },
@@ -292,7 +296,7 @@ export default new Vuex.Store({
       .then(res => {
         commit('updateAttendance', res.data.data.attendance.returning[0])
       })
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
     },
     async savePlayer({ commit }, player) {
       if (!player.name || player.name.trim() == "") return;
@@ -327,7 +331,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
       commit('updatePlayer', res.data.data.player)
       commit('addPlayer', res.data.data.player)
@@ -366,7 +370,7 @@ export default new Vuex.Store({
       .then(res => {
         commit('updateCourses', res.data.data.courses)
       })
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
     },
     async saveCourse ({commit, getters}, course) {
       let object = {
@@ -428,7 +432,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
       commit('updateCourse', res.data.data.course)
 
@@ -509,7 +513,7 @@ export default new Vuex.Store({
         M.toast({html: 'Training wurde aktualisiert', classes: 'green'})
         commit('updateTraining', res.data.data.training)
       })
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
     },
     async deleteTraining ({commit, getters}, trainingId) {
@@ -531,7 +535,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
       commit('deleteTraining', {
         trainingId: res.data.data.training.trainingId,
@@ -560,7 +564,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(() => alert('API ist nicht erreichbar'))
+      .catch(handle_api_error)
 
       commit('deleteCourse', res.data.data.course.courseId)
 
