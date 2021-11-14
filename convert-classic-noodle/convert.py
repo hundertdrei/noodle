@@ -56,7 +56,9 @@ raw_classic_user = None
 for db_data in classic_db:
     if db_data["type"] != "table": continue
     table_name = db_data["name"]
-    vars()["raw_classic_" + table_name] = db_data["data"]
+    var_name = "raw_classic_" + table_name
+    assert(var_name in vars())
+    vars()[var_name] = db_data["data"]
 
 #
 # Convert data into new structure
@@ -252,7 +254,7 @@ for course in training_to_new_course.values():
     course_data["comment"] = ""
     course_data["day_of_week"] = course.day_of_week
     result = gql_client.execute(query_add_course, variable_values={"object": course_data})
-    course_ids[repr(course)] = result['course']['courseId']
+    course_ids[course] = result['course']['courseId']
 
 # Create trainings
 query_add_training = gql("""
@@ -278,10 +280,10 @@ query_add_training = gql("""
 training_ids = {}
 for training in trainings.values():
     training_data = {}
-    training_data["course_id"] = course_ids[repr(training.course)]
+    training_data["course_id"] = course_ids[training.course]
     training_data["training_date"] = training.date.isoformat()
     result = gql_client.execute(query_add_training, variable_values={"object": training_data})
-    training_ids[repr(training)] = result['training']['trainingId']
+    training_ids[training] = result['training']['trainingId']
 
 # Create attendance
 query_add_attendance = gql("""
@@ -304,6 +306,6 @@ for player, attendance_list in attendances.items():
     attendance_data = {}
     attendance_data["playerId"] = playerId
     for training_obj, attending in attendance_list:
-        attendance_data["trainingId"] = training_ids[repr(training_obj)]
+        attendance_data["trainingId"] = training_ids[training_obj]
         attendance_data["attend"] = attending
         gql_client.execute(query_add_attendance, variable_values=attendance_data)
