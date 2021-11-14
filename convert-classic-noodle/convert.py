@@ -6,7 +6,8 @@ from gql.transport.requests import RequestsHTTPTransport
 import json
 from datetime import *
 
-# Convert data from old Noodle
+# Convert data from old Noodle.
+# Requires "gql" package (installable via pip).
 #
 # Usage:
 # * Obtain phpMyAdmin JSON dump of database
