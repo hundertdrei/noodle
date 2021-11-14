@@ -13,8 +13,13 @@ docker-compose build
 docker-compose up
 ```
 
-Einmalig muss man alle Tabellen und Abhängigkeiten in Hasura tracken. Dazu öffnen man die Hasura Console unter http://localhost:7070 und wählt im "Data" Reiter Track all tables und dann track all relationsships aus.
+### Hasura-Einstellungen
 
+* Einmalig muss man alle Tabellen und Abhängigkeiten in Hasura tracken. Dazu öffnen man die Hasura Console unter http://localhost:7070 und führ im "Data" Reiter folgende Schritte aus;#
+  1. Neben "Untracked tables or views" auf "Track all" klicken
+  2. Neben "Untracked foreign-key relationships" auf "Track all" klicken
+
+* Metadata aus `hasura_metadata.json` importieren, über Zahnrad-Icon rechts oben.
 
 Die App ist dann unter http://localhost:8080 verfügbar
 

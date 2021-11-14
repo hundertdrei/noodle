@@ -59,6 +59,18 @@
             }
           }
         }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "player_id",
+              "name"
+            ],
+            "filter": {}
+          }
+        }
       ]
     },
     {
@@ -85,6 +97,24 @@
                 "name": "fact_attendance"
               }
             }
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "anonymous",
+          "permission": {
+            "columns": [
+              "training_id",
+              "course_id",
+              "training_date",
+              "time_begin",
+              "time_end",
+              "location",
+              "comment",
+              "cancelled"
+            ],
+            "filter": {}
           }
         }
       ]
