@@ -1,6 +1,6 @@
 create table dim_player (
     player_id serial primary key,
-    name varchar(40) not null unique
+    name varchar(50) not null unique
 );
 
 /* example values */
@@ -11,7 +11,7 @@ insert into dim_player values
 
 create table dim_course (
     course_id serial primary key,
-    title varchar(60) not null,
+    title varchar(140) not null,
     title_short varchar(15) not null,
     date_begin date not null,
     date_end date not null,
