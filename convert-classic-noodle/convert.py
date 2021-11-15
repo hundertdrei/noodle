@@ -189,7 +189,6 @@ query_add_player = gql("""
             update_columns: [name]
             }
         ) {
-            name
             player_id
         }
     }
@@ -220,25 +219,7 @@ query_add_course = gql("""
                 update_columns: [title, title_short, date_begin, date_end, time_begin, time_end, location, comment, day_of_week]
             }
         ) {
-            courseId: course_id
-            title
-            titleShort: title_short
-            location
-            timeBegin: time_begin
-            timeEnd: time_end
-            dateBegin: date_begin
-            dateEnd: date_end
-            dayOfWeek: day_of_week
-            comment,
-            trainings: dim_trainings {
-                trainingDate: training_date
-                courseId: course_id
-                trainingId: training_id
-                timeBegin: time_begin
-                timeEnd: time_end
-                location
-                comment
-            }
+            course_id
         }
     }
 """)
@@ -255,7 +236,7 @@ for course in training_to_new_course.values():
     course_data["comment"] = ""
     course_data["day_of_week"] = course.day_of_week
     result = gql_client.execute(query_add_course, variable_values={"object": course_data})
-    course_ids[course] = result['course']['courseId']
+    course_ids[course] = result['course']['course_id']
 
 # Create trainings
 query_add_training = gql("""
@@ -267,14 +248,7 @@ query_add_training = gql("""
                 update_columns: [course_id, training_date, comment, time_begin, time_end, location]
             }
         ) {
-            trainingDate: training_date
-            trainingId: training_id
-            timeEnd: time_end
-            timeBegin: time_begin
-            location
-            cancelled
-            comment
-            courseId: course_id
+            training_id
         }
     } 
 """)
@@ -284,19 +258,14 @@ for training in trainings.values():
     training_data["course_id"] = course_ids[training.course]
     training_data["training_date"] = training.date.isoformat()
     result = gql_client.execute(query_add_training, variable_values={"object": training_data})
-    training_ids[training] = result['training']['trainingId']
+    training_ids[training] = result['training']['training_id']
 
 # Create attendance
 query_add_attendance = gql("""
     mutation ( $playerId: Int, $trainingId: Int, $attend: Boolean ) {
         attendance: insert_fact_attendance(objects: {player_id: $playerId, training_id: $trainingId, attend: $attend}, on_conflict: {constraint: fact_attendance_pkey, update_columns: attend}) {
             returning {
-                player: dim_player {
-                    name
-                    playerId: player_id
-                }
-                attend
-                trainingId: training_id
+                training_id
             }
         }
     }
