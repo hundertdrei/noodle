@@ -6,7 +6,9 @@ export default {
     return {
       auth0: null,
       authenticated: false,
-      apiToken: null
+      apiToken: null,
+      isAdmin: false,
+      info: {}
     }
   },
   mutations: {
@@ -18,6 +20,12 @@ export default {
     },
     setAPIToken(state, value) {
       state.apiToken = value;
+    },
+    setAdminStatus(state, value) {
+      state.isAdmin = value;
+    },
+    setInfo(state, value) {
+      state.info = value;
     }
   },
   actions: {
@@ -40,7 +48,9 @@ export default {
 
       if (authenticated) {
         const claims = await state.auth0.getIdTokenClaims()
+        commit('setInfo', claims)
         commit('setAPIToken', claims.__raw)
+        commit('setAdminStatus', claims["https://noodlelab.de"].is_admin ? true : false)
       }
       commit('setAuthenticated', authenticated)
 

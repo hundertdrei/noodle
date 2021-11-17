@@ -10,19 +10,20 @@
         >
         <ul id="nav-mobile" class="left hide-on-med-and-down">
           <li><router-link to="/">Home</router-link></li>
-          <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
+          <li v-if="isAdmin"><router-link to="/admin">Admin</router-link></li>
         </ul>
       </div>
     </nav>
 
     <ul class="sidenav" ref="sidenav" id="mobile-demo">
       <li><router-link to="/">Home</router-link></li>
-      <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
+      <li v-if="isAdmin"><router-link to="/admin">Admin</router-link></li>
     </ul>
 
     <router-view />
 
     <footer class="page-footer grey darken-4">
+      <span v-if="authenticated">Hallo {{ info.nickname }}! - </span>
       <a v-if="authenticated" @click="logout">Logout</a>
       <router-link v-else to="/login">Login</router-link>
     </footer>
@@ -35,7 +36,7 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   computed: {
-    ...mapState('auth', ['authenticated'])
+    ...mapState('auth', ['isAdmin','authenticated', 'info'])
   },
   methods: {
     ...mapActions('auth', ['logout'])

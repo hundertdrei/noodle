@@ -116,3 +116,36 @@ docker run -d \
   -p 8080:80 \
   noodle-app
 ```
+
+### Auth0
+
+Admins müssen in "user_metadata" die Flag "is_admin": true gesetzt haben:
+
+```
+{
+  "is_admin": true
+}
+```
+
+Über folgende Regel (Auth Pipelines Rules), wird die Information der App und Hasura übergeben:
+
+```
+function (user, context, callback) {
+  const namespace = "https://hasura.io/jwt/claims";
+  let role = user.user_metadata.is_admin ? 'admin' : 'anonymous';
+
+  context.idToken["https://noodlelab.de"] = 
+    {
+      is_admin: user.user_metadata.is_admin ? true : false
+    };
+
+  context.idToken[namespace] = 
+    { 
+      'x-hasura-default-role': role,
+      // do some custom logic to decide allowed roles
+      'x-hasura-allowed-roles': [role],
+      'x-hasura-user-id': user.user_id
+    };
+  callback(null, user, context);
+}
+```

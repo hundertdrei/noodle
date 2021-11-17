@@ -8,6 +8,8 @@ insert into dim_player values
  (1, 'Andreas'),
  (2, 'Johanna');
 
+alter sequence dim_player_player_id_seq RESTART WITH 3;
+
 
 create table dim_course (
     course_id serial primary key,
@@ -27,6 +29,8 @@ create table dim_course (
 insert into dim_course values
 (1, 'Anfängertraining A1 Sommersemester 2021', 'A1', '2021-04-01', '2021-07-31', '18:00', '20:00', 1, 'USV Oberaue 1', 'Scheibe mitbringen'),
 (2, 'Freies Spiel Sommersemester 2021', 'FS', '2021-04-01', '2021-07-31', '18:30', '20:00', 0, 'USV Oberaue 1', 'Kein Training');
+
+alter sequence dim_course_course_id_seq RESTART WITH 3;
 
 create table dim_training (
     training_id serial primary key,
@@ -80,6 +84,7 @@ insert into dim_training (training_id, course_id, training_date) values
 (33, 2, '2021-07-18'),
 (34, 2, '2021-07-25');
 
+alter sequence dim_training_training_id_seq RESTART WITH 35;
 
 create table fact_attendance (
     player_id int not null,
