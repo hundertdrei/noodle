@@ -197,6 +197,14 @@ for player_name in attendances.keys():
     player_name_to_id[player_name] = player_id
 
 # Create courses
+query_find_course = gql("""
+    query ($date_begin: date, $date_end: date, $time_begin: time, $time_end: time, $day_of_week: smallint) {
+        dim_course(where: {date_begin: {_eq: $date_begin}, date_end: {_eq: $date_end}, time_begin: {_eq: $time_begin}, time_end: {_eq: $time_end}, day_of_week: {_eq: $day_of_week}})
+        {
+            course_id
+        }
+    }
+""")
 query_add_course = gql("""
     mutation ($object: dim_course_insert_input! ) {
         course: insert_dim_course_one (
@@ -212,20 +220,37 @@ query_add_course = gql("""
 """)
 course_ids = {}
 for course in training_to_new_course.values():
+    # First, see if there's a course with matching characteristics
+    # We only compare dates/times b/c the title might have been changed ...
     course_data = {}
-    course_data["title"] = course.title
-    course_data["title_short"] = ""
     course_data["date_begin"] = course.date_begin.date().isoformat()
     course_data["date_end"] = course.date_end.date().isoformat()
     course_data["time_begin"] = course.time_begin.isoformat()
     course_data["time_end"] = course.time_end.isoformat()
-    course_data["location"] = course.location
-    course_data["comment"] = ""
     course_data["day_of_week"] = course.day_of_week
-    result = gql_client.execute(query_add_course, variable_values={"object": course_data})
-    course_ids[course] = result['course']['course_id']
+    find_result = gql_client.execute(query_find_course, variable_values=course_data)
+    if len(find_result['dim_course']) > 0:
+        # Pick existing course
+        course_id = find_result['dim_course'][0]['course_id']
+    else:
+        # Insert new course
+        course_data["title"] = course.title
+        course_data["title_short"] = ""
+        course_data["location"] = course.location
+        course_data["comment"] = ""
+        result = gql_client.execute(query_add_course, variable_values={"object": course_data})
+        course_id = result['course']['course_id']
+    course_ids[course] = course_id
 
 # Create trainings
+query_find_course = gql("""
+    query ($course_id: Int, $training_date: date) {
+        dim_training(where: {course_id: {_eq: $course_id}, training_date: {_eq: $training_date}})
+        {
+            training_id
+        }
+    }
+""")
 query_add_training = gql("""
     mutation ($object: dim_training_insert_input! ) {
         training: insert_dim_training_one(
@@ -244,13 +269,26 @@ for training in trainings.values():
     training_data = {}
     training_data["course_id"] = course_ids[training.course]
     training_data["training_date"] = training.date.isoformat()
-    result = gql_client.execute(query_add_training, variable_values={"object": training_data})
-    training_ids[training] = result['training']['training_id']
+    find_result = gql_client.execute(query_find_course, variable_values=training_data)
+    if len(find_result['dim_training']) > 0:
+        # Pick existing training
+        training_id = find_result['dim_training'][0]['training_id']
+    else:
+        # Insert new training
+        result = gql_client.execute(query_add_training, variable_values={"object": training_data})
+        training_id = result['training']['training_id']
+    training_ids[training] = training_id
 
 # Create attendance
 query_add_attendance = gql("""
     mutation ( $playerId: Int, $trainingId: Int, $attend: Boolean ) {
-        attendance: insert_fact_attendance(objects: {player_id: $playerId, training_id: $trainingId, attend: $attend}, on_conflict: {constraint: fact_attendance_pkey, update_columns: attend}) {
+        attendance: insert_fact_attendance(
+                objects: {player_id: $playerId, training_id: $trainingId, attend: $attend},
+                on_conflict: {
+                    constraint: fact_attendance_pkey,
+                    update_columns: attend
+                }
+        ) {
             returning {
                 training_id
             }
