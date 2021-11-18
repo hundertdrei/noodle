@@ -30,7 +30,8 @@ export default new Vuex.Store({
   },
   getters: {
     calendar (state) {
-      let weeks = _.groupBy(state.trainings, o => dayjs(o.trainingDate).isoWeek());
+      // Combine week and week year so weeks get properly ordered across year changes
+      let weeks = _.groupBy(state.trainings, o => dayjs(o.trainingDate).isoWeek() + 100 * dayjs(o.trainingDate).isoWeekYear());
       let calendar = _.map(weeks, w => _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()));
 
       return calendar;
