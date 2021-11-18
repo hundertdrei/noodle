@@ -173,20 +173,13 @@ gql_client = Client(transport=gql_transport, fetch_schema_from_transport=True)
 # Map: player name -> player_id
 player_name_to_id = {}
 # Make sure each player is registered
-query_find_player = gql("""
-    query MyQuery($name: String) {
-        dim_player(where: {name: {_eq: $name}}) {
-            player_id
-        }
-    }
-""")
 query_add_player = gql("""
     mutation ($object: dim_player_insert_input!) {
         player: insert_dim_player_one (
             object: $object,
             on_conflict: {
-            constraint: dim_player_pkey,
-            update_columns: [name]
+                constraint: dim_player_name_key,
+                update_columns: [name]
             }
         ) {
             player_id
@@ -196,14 +189,8 @@ query_add_player = gql("""
 for player_name in attendances.keys():
     player_id = None
     try:
-        result = gql_client.execute(query_find_player, variable_values={"name": player_name})
-        dim_player_result = result['dim_player']
-        if len(dim_player_result) == 0:
-            # Add new player
-            result = gql_client.execute(query_add_player, variable_values={"object": {"name": player_name}})
-            player_result = result['player']
-        else:
-            player_result = dim_player_result[0]
+        result = gql_client.execute(query_add_player, variable_values={"object": {"name": player_name}})
+        player_result = result['player']
         player_id = player_result['player_id']
     except Exception as e:
         print(f"Error adding player {player_name}: {e}")
