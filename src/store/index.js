@@ -166,7 +166,7 @@ export default new Vuex.Store({
       axios.post('', {
         query: `
         query {
-          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'", _lte: "'2021-09-01'"}}) {
+          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'"}}) {
             location
             timeBegin: time_begin
             timeEnd: time_end
