@@ -1,0 +1,4 @@
+- "!include public_dim_course.yaml"
+- "!include public_dim_player.yaml"
+- "!include public_dim_training.yaml"
+- "!include public_fact_attendance.yaml"

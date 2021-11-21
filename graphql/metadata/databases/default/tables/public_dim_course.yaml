@@ -1,0 +1,26 @@
+table:
+  name: dim_course
+  schema: public
+array_relationships:
+- name: dim_trainings
+  using:
+    foreign_key_constraint_on:
+      column: course_id
+      table:
+        name: dim_training
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - course_id
+    - title
+    - title_short
+    - date_begin
+    - date_end
+    - time_begin
+    - time_end
+    - day_of_week
+    - location
+    - comment
+    filter: {}
+  role: anonymous
