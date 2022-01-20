@@ -30,7 +30,8 @@ export default new Vuex.Store({
   },
   getters: {
     calendar (state) {
-      let weeks = _.groupBy(state.trainings, o => dayjs(o.trainingDate).isoWeek());
+      // Combine week and week year so weeks get properly ordered across year changes
+      let weeks = _.groupBy(state.trainings, o => dayjs(o.trainingDate).isoWeek() + 100 * dayjs(o.trainingDate).isoWeekYear());
       let calendar = _.map(weeks, w => _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()));
 
       return calendar;
@@ -166,7 +167,7 @@ export default new Vuex.Store({
       axios.post('', {
         query: `
         query {
-          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'", _lte: "'2021-09-01'"}}) {
+          trainings: dim_training(order_by: {training_date: asc}, where: {training_date: {_gte: "'${lower}'"}}) {
             location
             timeBegin: time_begin
             timeEnd: time_end
