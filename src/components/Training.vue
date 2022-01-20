@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: "Training",
   props: ["data"],
@@ -55,11 +57,14 @@ export default {
     }
   },
   computed: {
+    attendees () {
+      return _.sortBy(this.data.attendees, o => o.player.name.toLowerCase())
+    },
     attending() {
-      return this.data.attendees.filter((o) => o.attend === true);
+      return this.attendees.filter((o) => o.attend === true);
     },
     notAttending() {
-      return this.data.attendees.filter((o) => o.attend === false);
+      return this.attendees.filter((o) => o.attend === false);
     },
     formatTime () {
       return function (x) { return this.$options.filters.timejs(x, "HH:mm") }

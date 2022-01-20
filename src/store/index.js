@@ -72,7 +72,7 @@ export default new Vuex.Store({
 
       let t = state.nextTrainings.findIndex(o => o.trainingId == trainingId)
       if (t != -1) {
-        let a = state.nextTrainings[t].attendees.findIndex(o => o.player.playerId = player.playerId)
+        let a = state.nextTrainings[t].attendees.findIndex(o => o.player.playerId == player.playerId)
         if (a == -1) state.nextTrainings[t].attendees.push({attend, player})
         else Vue.set(state.nextTrainings[t].attendees, a, {attend, player})
       }
@@ -295,6 +295,7 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
+        console.log(res.data.data.attendance)
         commit('updateAttendance', res.data.data.attendance.returning[0])
       })
       .catch(handle_api_error)
