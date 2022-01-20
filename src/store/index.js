@@ -78,7 +78,7 @@ export default new Vuex.Store({
       }
     },
     updateCourses (state, courses) {
-      state.courses = courses;
+      state.courses = _.orderBy(courses, ["dateBegin"], ["desc"]);
     },
     updateCourse(state, course) {
       let i = state.courses.findIndex(o => o.courseId == course.courseId);
