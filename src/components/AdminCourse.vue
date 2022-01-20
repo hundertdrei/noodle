@@ -17,7 +17,7 @@
     </div>
     <div class="card trainings">
       <div class="card-image">
-        <a @click="addTrainingDialog" class="btn-floating halfway-fab waves-effect waves-light green">
+        <a @click="addTrainingDialog" class="btn-floating halfway-fab waves-effect waves-light darkblue">
           <i class="material-icons">add</i>
         </a>
         <div class="new-training-date-container">

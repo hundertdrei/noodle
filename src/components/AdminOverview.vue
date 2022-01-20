@@ -2,7 +2,7 @@
   <div class="container">
     <div class="card">
       <div class="card-image">
-        <router-link to="/admin/course/new" class="btn-floating halfway-fab waves-effect waves-light green">
+        <router-link to="/admin/course/new" class="btn-floating halfway-fab waves-effect waves-light blue">
           <i class="material-icons">add</i>
         </router-link>
       </div>

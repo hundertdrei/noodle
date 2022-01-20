@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="grey lighten-3">
     <nav>
-      <div class="nav-wrapper green">
+      <div class="nav-wrapper light-blue darken-4">
         <a href="#" class="brand-logo right">
           <i class="material-icons">local_dining</i>
         </a>
@@ -19,6 +19,17 @@
       <li><router-link to="/">Home</router-link></li>
       <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
     </ul>
+
+    <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+              <div class="splash"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+
 
     <router-view />
 
@@ -48,7 +59,7 @@ export default {
 </script>
 
 <style lang="scss">
-$secondary-color: green;
+$secondary-color: #01579b;
 
 @import "~materialize-css";
 @import "~material-design-icons/iconfont/material-icons.css";
@@ -88,5 +99,47 @@ footer {
 
 footer a {
   color: white;
+}
+
+$splashMargin: 32px;
+
+.splash {
+    background: url('./assets/Touched_1600.jpg') center 40% / cover;
+    min-height: 200px;
+}
+
+@media screen and (max-width:(1280px + $splashMargin)) and (max-resolution:1dppx),
+  screen and (max-width:(640px + $splashMargin)) and (max-resolution:2dppx),
+  screen and (max-width:(427px + $splashMargin)) and (max-resolution:3dppx) {
+    .splash {
+        background-image: url('./assets/Touched_1280.jpg');
+    }
+}
+
+@media screen and (max-width:(1080px + $splashMargin)) and (max-resolution:1dppx),
+  screen and (max-width:(540px + $splashMargin)) and (max-resolution:2dppx),
+  screen and (max-width:(360px + $splashMargin)) and (max-resolution:3dppx) {
+    .splash {
+        background-image: url('./assets/Touched_1080.jpg');
+    }
+}
+
+@media screen and (max-width:(800px + $splashMargin)) and (max-resolution:1dppx),
+  screen and (max-width:(400px + $splashMargin)) and (max-resolution:2dppx) {
+    .splash {
+        background-image: url('./assets/Touched_800.jpg');
+    }
+}
+
+@media screen and (max-width:(540px + $splashMargin)) and (max-resolution:1dppx) {
+    .splash {
+        background-image: url('./assets/Touched_540.jpg');
+    }
+}
+
+@media screen and (max-width:(400px + $splashMargin)) and (max-resolution:1dppx) {
+    .splash {
+        background-image: url('./assets/Touched_400.jpg');
+    }
 }
 </style>
