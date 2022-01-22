@@ -15,8 +15,27 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.use(Vuex)
 
-function handle_api_error(error) {
+function handleAPIError(error) {
   alert("API ist nicht erreichbar: " + error);
+}
+
+// split values into buckets
+function bucket (values, splits) {
+  let v = 0
+  let s = 0
+  let res = []
+
+  while (v < values.length) {
+      // chooose current split
+      if (splits[s] !== undefined && splits[s + 1] !== undefined && splits[s + 1] <= values[v]) {
+      s = s + 1
+      continue
+      }
+      res.push((splits[s] !== undefined && splits[s] <= values[v]) ? splits[s] : -1)
+      v = v + 1
+  }
+
+  return res
 }
 
 export default new Vuex.Store({
@@ -26,19 +45,35 @@ export default new Vuex.Store({
     nextTrainings: [],
     trainings: [],
     attendance: [],
-    courses: []
+    courses: [],
+    milestones: []
   },
   getters: {
     calendar (state) {
       // Combine week and week year so weeks get properly ordered across year changes
-      let weeks = _.groupBy(state.trainings, o => dayjs(o.trainingDate).isoWeek() + 100 * dayjs(o.trainingDate).isoWeekYear());
-      let calendar = _.map(weeks, w => _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()));
+      let trainings = _.map(state.trainings, o => {
+        o.weekIndex = dayjs(o.trainingDate).isoWeek() + 100 * dayjs(o.trainingDate).isoWeekYear()
+        return o
+      })
 
-      return calendar;
-    },
-    calendarDays (state) {
-      let days = _.map(state.trainings, o => dayjs(o.trainingDate).isoWeekday())
-      return _.uniq(days).sort();
+      let weeks = _.groupBy(trainings, "weekIndex");
+
+      let calendar = _.map(weeks, w => ({
+        "days": _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()),
+        "weekIndex": w[0].weekIndex
+      }));
+
+      let weekIndices = _.map(calendar, "weekIndex")
+
+      let milestoneWeeks = _.keys(state.milestones)
+
+      let buckets = bucket(weekIndices, milestoneWeeks)
+
+      calendar = _.merge(calendar, _.map(buckets, o => ({"weekBucket": o})))
+      
+      let grouped = _.values(_.groupBy(calendar, "weekBucket"));
+
+      return _.sortBy(grouped, o => o[0].weekBucket);
     },
     apiToken (state, getters, rootState) {
       return rootState.auth.apiToken;
@@ -125,7 +160,10 @@ export default new Vuex.Store({
       if (this.player && this.player.playerId == playerId) {
         this.player = null;
       }
-    }
+    },
+    updateMilestones (state, milestones) {
+      state.milestones = _.keyBy(milestones, o => dayjs(o.date).isoWeek() + 100 * dayjs(o.date).isoWeekYear());
+    },
   },
   actions: {
     getNextTrainings ({ commit }) {
@@ -160,7 +198,7 @@ export default new Vuex.Store({
          `
        })
        .then(res => commit('updateNextTrainings', res.data.data.trainings))
-       .catch(handle_api_error)
+       .catch(handleAPIError)
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
@@ -185,7 +223,7 @@ export default new Vuex.Store({
         `
       })
       .then(res => commit('updateTrainings', res.data.data.trainings))
-      .catch(handle_api_error)
+      .catch(handleAPIError)
     },
     getPlayerAttendance ({ commit, state }) {
       let player = state.player;
@@ -217,7 +255,7 @@ export default new Vuex.Store({
           commit('setPlayerAttendance', res.data.data.player[0].attendance)
         }
       })
-      .catch(handle_api_error)
+      .catch(handleAPIError)
     },
     async getPlayers ({ commit }) {
       const result = await axios.post(
@@ -233,7 +271,7 @@ export default new Vuex.Store({
           `
         }
       )       
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
 
       commit('updatePlayers', result.data.data.players)
@@ -258,7 +296,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
       commit('updatePlayers', result.data.data.players)
     },
@@ -295,10 +333,9 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        console.log(res.data.data.attendance)
         commit('updateAttendance', res.data.data.attendance.returning[0])
       })
-      .catch(handle_api_error)
+      .catch(handleAPIError)
     },
     async savePlayer({ commit }, player) {
       if (!player.name || player.name.trim() == "") return;
@@ -333,7 +370,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
       commit('updatePlayer', res.data.data.player)
       commit('addPlayer', res.data.data.player)
@@ -372,7 +409,7 @@ export default new Vuex.Store({
       .then(res => {
         commit('updateCourses', res.data.data.courses)
       })
-      .catch(handle_api_error)
+      .catch(handleAPIError)
     },
     async saveCourse ({commit, getters}, course) {
       let object = {
@@ -434,7 +471,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
       commit('updateCourse', res.data.data.course)
 
@@ -515,7 +552,7 @@ export default new Vuex.Store({
         M.toast({html: 'Training wurde aktualisiert', classes: 'green'})
         commit('updateTraining', res.data.data.training)
       })
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
     },
     async deleteTraining ({commit, getters}, trainingId) {
@@ -537,7 +574,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
       commit('deleteTraining', {
         trainingId: res.data.data.training.trainingId,
@@ -566,7 +603,7 @@ export default new Vuex.Store({
           }
         }
       )
-      .catch(handle_api_error)
+      .catch(handleAPIError)
 
       commit('deleteCourse', res.data.data.course.courseId)
 
@@ -594,6 +631,25 @@ export default new Vuex.Store({
       state.nextTrainings.map(o => commit('updateAttendance', {trainingId: o.trainingId, attend: null, player: {playerId}}))
 
       return res.data.data.player.playerId;
+    },
+    getMilestones ({ commit }) {
+      axios.post(
+        '',
+        {
+          query: `
+          query {
+            milestones: fact_milestone {
+              date
+              name
+            }
+          }
+          `
+        }
+      )
+      .then(res => {
+        commit('updateMilestones', res.data.data.milestones)
+      })
+      .catch(handleAPIError)
     },
   },
   modules: {
