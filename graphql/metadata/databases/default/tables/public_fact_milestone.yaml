@@ -1,0 +1,10 @@
+table:
+  name: fact_milestone
+  schema: public
+select_permissions:
+- permission:
+    columns:
+    - date
+    - name
+    filter: {}
+  role: anonymous
