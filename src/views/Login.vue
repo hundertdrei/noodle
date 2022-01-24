@@ -28,12 +28,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "~materialize-css";
+
 .card-content {
   text-align: center;
 }
 .error-content {
-  background: #ffe0e0;
+  @extend .red, .lighten-4;
 }
 .error-title {
   font-weight: bold;
