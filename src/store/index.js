@@ -46,7 +46,7 @@ export default new Vuex.Store({
     trainings: [],
     attendance: [],
     courses: [],
-    milestones: []
+    milestones: {}
   },
   getters: {
     calendar (state) {
@@ -163,6 +163,22 @@ export default new Vuex.Store({
     },
     updateMilestones (state, milestones) {
       state.milestones = _.keyBy(milestones, o => dayjs(o.date).isoWeek() + 100 * dayjs(o.date).isoWeekYear());
+    },
+    updateMilestone (state, milestone) {
+      let key = _.findKey(state.milestones, o => o.date == milestone.date);
+
+      if (key === undefined) {
+        key = dayjs(milestone.date).isoWeek() + 100 * dayjs(milestone.date).isoWeekYear()
+      }
+      
+      Vue.set(state.milestones, key, milestone)
+    },
+    deleteMilestone(state, date) {
+      let key = _.findKey(state.milestones, o => o.date == date);
+
+      if (key === undefined) return;
+
+      Vue.delete(state.milestones, key)
     },
   },
   actions: {
@@ -650,6 +666,71 @@ export default new Vuex.Store({
         commit('updateMilestones', res.data.data.milestones)
       })
       .catch(handleAPIError)
+    },
+    async saveMilestone ({commit, getters}, milestone) {
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation ($object: fact_milestone_insert_input! ) {
+            milestone: insert_fact_milestone_one (
+              object: $object,
+              on_conflict: {
+                constraint: fact_milestone_pkey,
+                update_columns: [name]
+              }
+            ) {
+              date
+              name
+            }
+          }`,
+          variables: {
+            object: milestone
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
+          }
+        }
+      )
+      .catch(handleAPIError)
+
+      console.log(res.data)
+
+      commit('updateMilestone', res.data.data.milestone)
+
+      M.toast({html: 'Semestertermin wurde aktualisiert', classes: 'green'})
+
+      return res.data.data.milestone.date;
+    },    
+    async deleteMilestone ({commit, getters}, date) {
+      const res = await axios.post(
+        '',
+        {
+          query: `
+          mutation {
+            milestone: delete_fact_milestone_by_pk(date: "${date}") {
+              date: date
+            }
+          }
+          `
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getters.apiToken}`
+          }
+        }
+      )
+      .catch(handleAPIError)
+
+      console.log(res.data)
+
+      commit('deleteMilestone', res.data.data.milestone.date)
+
+      M.toast({html: 'Semestertermin wurde gelöscht', classes: 'green'})
+
+      return res.data.data.milestone.date;
     },
   },
   modules: {
