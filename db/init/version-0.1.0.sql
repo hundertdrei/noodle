@@ -5,7 +5,7 @@ create table dim_player (
 
 create table dim_course (
     course_id serial primary key,
-    title varchar(120) not null,
+    title varchar(140) not null,
     title_short varchar(15) not null,
     date_begin date not null,
     date_end date not null,
