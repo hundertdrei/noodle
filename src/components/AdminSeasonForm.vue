@@ -14,7 +14,7 @@
         </div>
         <div class="row">
           <div class="col s12">
-            <Datepicker v-model="values.date" label="Datum" />
+            <Datepicker v-model="values.date" label="Start" />
           </div>
         </div>
       </div>
