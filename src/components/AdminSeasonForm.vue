@@ -2,7 +2,7 @@
     <div class="card">
       <div class="card-content">
         <div class="card-title">
-          {{ type == "edit" ? "Semestertermin bearbeiten" : "Semestertermin erstellen" }}
+          {{ type == "edit" ? "Saison bearbeiten" : "Saison erstellen" }}
         </div>
         <div class="row">
           <div class="col s12">
@@ -41,9 +41,11 @@
 import { mapState, mapActions } from "vuex";
 import Datepicker from "@/components/Datepicker";
 import _ from 'lodash'
+import M from "materialize-css";
+
 
 export default {
-  props: ["date"],
+  props: ["id"],
   components: {
     Datepicker
   },
@@ -56,40 +58,40 @@ export default {
     };
   },
   watch: {
-    // course: {
-    //   handler(val) {
-    //     if (!val) return;
-    //     this.values = val;
-    //     setTimeout(M.updateTextFields, 100);
-    //   },
-    //   immediate: true,
-    // },
+    season: {
+      handler(val) {
+        if (!val) return;
+        this.values = val;
+        setTimeout(M.updateTextFields, 100);
+      },
+      immediate: true,
+    },
   },
   computed: {
-    ...mapState(["milestones"]),
+    ...mapState(["seasons"]),
     type() {
-      return !this.milestone ? "new" : "edit";
+      return !this.season ? "new" : "edit";
     },
-    milestone() {
-      let milestones = _.values(this.milestones)
-      let f = milestones.filter((o) => o.date == this.date);
+    season() {
+      let seasons = _.values(this.seasons)
+      let f = seasons.filter((o) => o.seasonId == this.id);
       if (f.length > 0) return f[0];
       else return null;
     },
   },
   methods: {
-    ...mapActions(["saveMilestone"]),
+    ...mapActions(["saveSeason"]),
     async save() {
-      let date = await this.saveMilestone(this.values);
+      let seasonId = await this.saveSeason(this.values);
 
-      this.$router.push({ path: "/admin/milestone/" + date });
+      this.$router.push({ path: "/admin/season/" + seasonId });
     },
     cancel() {
       if (this.type == "edit") {
-        this.$router.push({ path: "/admin/milestone/" + this.milestone.date });
+        this.$router.push({ path: "/admin/season/" + this.season.seasonId });
       }
       if (this.type == "new") {
-        this.$router.push({ path: "/admin/milestones" });
+        this.$router.push({ path: "/admin/seasons" });
       }
     },
   },

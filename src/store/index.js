@@ -19,20 +19,31 @@ function handleAPIError(error) {
   alert("API ist nicht erreichbar: " + error);
 }
 
-// split values into buckets
+// Split Values into Buckets
+//
+// For a sorted array of values find the maximum value in an array
+// of sorted "split" values which is smaller or equal to this values.
+// Essentially this puts the `values` array into buckets separated
+// by the `split` values. If no split value is smaller than a given
+// value, -1 is returned.
+//
+// # example:
+// values = [1, 2, 3, 4, 5, 6]
+// splits = [2, 4]
+// => [-1, 2, 2, 4, 4, 4]
 function bucket (values, splits) {
   let v = 0
   let s = 0
   let res = []
 
   while (v < values.length) {
-      // chooose current split
-      if (splits[s] !== undefined && splits[s + 1] !== undefined && splits[s + 1] <= values[v]) {
+    // chooose current split
+    if (splits[s] !== undefined && splits[s + 1] !== undefined && splits[s + 1] <= values[v]) {
       s = s + 1
       continue
-      }
-      res.push((splits[s] !== undefined && splits[s] <= values[v]) ? splits[s] : -1)
-      v = v + 1
+    }
+    res.push((splits[s] !== undefined && splits[s] <= values[v]) ? splits[s] : -1)
+    v = v + 1
   }
 
   return res
@@ -46,7 +57,7 @@ export default new Vuex.Store({
     trainings: [],
     attendance: [],
     courses: [],
-    milestones: {}
+    seasons: {}
   },
   getters: {
     calendar (state) {
@@ -65,9 +76,9 @@ export default new Vuex.Store({
 
       let weekIndices = _.map(calendar, "weekIndex")
 
-      let milestoneWeeks = _.keys(state.milestones)
+      let seasonWeeks = _.keys(state.seasons)
 
-      let buckets = bucket(weekIndices, milestoneWeeks)
+      let buckets = bucket(weekIndices, seasonWeeks)
 
       calendar = _.merge(calendar, _.map(buckets, o => ({"weekBucket": o})))
       
@@ -161,24 +172,24 @@ export default new Vuex.Store({
         this.player = null;
       }
     },
-    updateMilestones (state, milestones) {
-      state.milestones = _.keyBy(milestones, o => dayjs(o.date).isoWeek() + 100 * dayjs(o.date).isoWeekYear());
+    updateSeasons (state, seasons) {
+      state.seasons = _.keyBy(seasons, o => dayjs(o.date).isoWeek() + 100 * dayjs(o.date).isoWeekYear());
     },
-    updateMilestone (state, milestone) {
-      let key = _.findKey(state.milestones, o => o.date == milestone.date);
+    updateSeason (state, season) {
+      let key = _.findKey(state.seasons, o => o.date == season.date);
 
       if (key === undefined) {
-        key = dayjs(milestone.date).isoWeek() + 100 * dayjs(milestone.date).isoWeekYear()
+        key = dayjs(season.date).isoWeek() + 100 * dayjs(season.date).isoWeekYear()
       }
       
-      Vue.set(state.milestones, key, milestone)
+      Vue.set(state.seasons, key, season)
     },
-    deleteMilestone(state, date) {
-      let key = _.findKey(state.milestones, o => o.date == date);
+    deleteSeason(state, id) {
+      let key = _.findKey(state.seasons, o => o.seasonId == id);
 
       if (key === undefined) return;
 
-      Vue.delete(state.milestones, key)
+      Vue.delete(state.seasons, key)
     },
   },
   actions: {
@@ -648,13 +659,14 @@ export default new Vuex.Store({
 
       return res.data.data.player.playerId;
     },
-    getMilestones ({ commit }) {
+    getSeasons ({ commit }) {
       axios.post(
         '',
         {
           query: `
           query {
-            milestones: fact_milestone {
+            seasons: fact_season {
+              seasonId: season_id
               date
               name
             }
@@ -663,55 +675,60 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        commit('updateMilestones', res.data.data.milestones)
+        commit('updateSeasons', res.data.data.seasons)
       })
       .catch(handleAPIError)
     },
-    async saveMilestone ({commit, getters}, milestone) {
+    async saveSeason ({commit, getters}, season) {
+      let object = {
+        season_id: season.seasonId,
+        name: season.name,
+        date: season.date
+      }
+      
       const res = await axios.post(
         '',
         {
           query: `
-          mutation ($object: fact_milestone_insert_input! ) {
-            milestone: insert_fact_milestone_one (
+          mutation ($object: fact_season_insert_input! ) {
+            season: insert_fact_season_one (
               object: $object,
               on_conflict: {
-                constraint: fact_milestone_pkey,
-                update_columns: [name]
+                constraint: fact_season_pkey,
+                update_columns: [name, date]
               }
-            ) {
-              date
-              name
-            }
-          }`,
-          variables: {
-            object: milestone
+              ) {
+                seasonId: season_id
+                date
+                name
+              }
+            }`,
+            variables: {
+              object: object
+            },
           },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${getters.apiToken}`
+          {
+            headers: {
+              Authorization: `Bearer ${getters.apiToken}`
+            }
           }
-        }
-      )
-      .catch(handleAPIError)
+          )
+          .catch(handleAPIError)
+          
+      commit('updateSeason', res.data.data.season)
 
-      console.log(res.data)
+      M.toast({html: 'Saison wurde aktualisiert', classes: 'green'})
 
-      commit('updateMilestone', res.data.data.milestone)
-
-      M.toast({html: 'Semestertermin wurde aktualisiert', classes: 'green'})
-
-      return res.data.data.milestone.date;
+      return res.data.data.season.seasonId;
     },    
-    async deleteMilestone ({commit, getters}, date) {
+    async deleteSeason ({commit, getters}, id) {
       const res = await axios.post(
         '',
         {
           query: `
           mutation {
-            milestone: delete_fact_milestone_by_pk(date: "${date}") {
-              date: date
+            season: delete_fact_season_by_pk(season_id: ${id}) {
+              seasonId: season_id
             }
           }
           `
@@ -724,13 +741,11 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      console.log(res.data)
+      commit('deleteSeason', res.data.data.season.seasonId)
 
-      commit('deleteMilestone', res.data.data.milestone.date)
+      M.toast({html: 'Saison wurde gelöscht', classes: 'green'})
 
-      M.toast({html: 'Semestertermin wurde gelöscht', classes: 'green'})
-
-      return res.data.data.milestone.date;
+      return res.data.data.season.seasonId;
     },
   },
   modules: {

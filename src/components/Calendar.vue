@@ -3,7 +3,7 @@
     <div class="card-content">
       <div v-for="(calendarTable, i) in calendar" :key="i">
       <h6 v-if="calendarTable[0].weekBucket != -1">
-        {{ milestones[calendarTable[0].weekBucket].name }}
+        {{ seasons[calendarTable[0].weekBucket].name }}
       </h6>
       <table>
         <tr>
@@ -41,10 +41,10 @@ export default {
   },
   computed: {
     ...mapGetters(["calendar"]),
-    ...mapState(["attendance", "milestones"])
+    ...mapState(["attendance", "seasons"])
   },
   methods: {
-    ...mapActions(["getTrainings", "getMilestones"]),
+    ...mapActions(["getTrainings", "getSeasons"]),
     attend(trainingId) {
       let a = this.attendance.filter(
           (o) => (o.trainingId == trainingId)
@@ -61,7 +61,7 @@ export default {
   },
   created() {
     this.getTrainings();
-    this.getMilestones();
+    this.getSeasons();
   },
 };
 </script>

@@ -1,9 +1,10 @@
 table:
-  name: fact_milestone
+  name: fact_season
   schema: public
 select_permissions:
 - permission:
     columns:
+    - season_id
     - date
     - name
     filter: {}

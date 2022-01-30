@@ -7,9 +7,9 @@ import AdminCourses from '@/components/AdminCourses.vue'
 import AdminCourse from '@/components/AdminCourse.vue'
 import AdminCourseForm from '@/components/AdminCourseForm.vue'
 
-import AdminMilestones from '@/components/AdminMilestones.vue'
-import AdminMilestone from '@/components/AdminMilestone.vue'
-import AdminMilestoneForm from '@/components/AdminMilestoneForm.vue'
+import AdminSeasons from '@/components/AdminSeasons.vue'
+import AdminSeason from '@/components/AdminSeason.vue'
+import AdminSeasonForm from '@/components/AdminSeasonForm.vue'
 
 import Login from '@/views/Login.vue'
 import store from '@/store'
@@ -56,21 +56,21 @@ const routes = [
         props: true
       },
       { 
-        path: 'milestones',
-        component: AdminMilestones
+        path: 'seasons',
+        component: AdminSeasons
       },
       {
-        path: 'milestone/new',
-        component: AdminMilestoneForm
+        path: 'season/new',
+        component: AdminSeasonForm
       },
       {
-        path: 'milestone/:date',
-        component: AdminMilestone,
+        path: 'season/:id',
+        component: AdminSeason,
         props: true
       },
       {
-        path: 'milestone/:date/edit',
-        component: AdminMilestoneForm,
+        path: 'season/:id/edit',
+        component: AdminSeasonForm,
         props: true
       },
     ]

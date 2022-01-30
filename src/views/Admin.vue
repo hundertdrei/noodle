@@ -13,11 +13,11 @@ import { mapActions } from "vuex";
 
 export default {
   methods: {
-    ...mapActions(["getCourses", "getMilestones"]),
+    ...mapActions(["getCourses", "getSeasons"]),
   },
   created() {
     this.getCourses();
-    this.getMilestones();
+    this.getSeasons();
   },
 };
 </script>

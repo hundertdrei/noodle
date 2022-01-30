@@ -2,4 +2,4 @@
 - "!include public_dim_player.yaml"
 - "!include public_dim_training.yaml"
 - "!include public_fact_attendance.yaml"
-- "!include public_fact_milestone.yaml"
+- "!include public_fact_season.yaml"

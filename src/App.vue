@@ -17,7 +17,7 @@
       <div class="nav-content light-blue darken-2" v-if="adminArea">
         <ul class="tabs tabs-transparent">
           <li class="tab"><router-link to="/admin/courses">Kurse</router-link></li>
-          <li class="tab"><router-link to="/admin/milestones">Semestertermine</router-link></li>
+          <li class="tab"><router-link to="/admin/seasons">Saisons</router-link></li>
         </ul>
       </div>
     </nav>
