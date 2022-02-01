@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="grey lighten-3">
     <nav>
-      <div class="nav-wrapper light-blue darken-4">
+      <div class="nav-wrapper theme-background">
         <a href="#" class="brand-logo right">
           <i class="material-icons">local_dining</i>
         </a>
@@ -59,10 +59,20 @@ export default {
 </script>
 
 <style lang="scss">
-$secondary-color: #01579b;
+$noodle-color: #01579b;
+
+:root {
+  --noodle-color: #{$noodle-color};
+}
+
+$secondary-color: $noodle-color;
 
 @import "~materialize-css";
 @import "~material-design-icons/iconfont/material-icons.css";
+
+.theme-background {
+  background: var(--noodle-color);
+}
 
 .text-bold {
   font-weight: bold;
