@@ -54,6 +54,10 @@ export default {
   mounted () {
     let elem = this.$refs["sidenav"];
     M.Sidenav.init(elem);
+
+    // Copy noodle color defined in SCSS into 'theme-color' meta attribute
+    var noodle_color = getComputedStyle(document.body).getPropertyValue("--noodle-color");
+    document.head.innerHTML += `<meta name="theme-color" content="${noodle_color}" />`;
   },
 };
 </script>
