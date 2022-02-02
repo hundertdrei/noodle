@@ -353,7 +353,10 @@ export default new Vuex.Store({
       dispatch('getPlayerAttendance')
     },
     async toggleAttendance({ commit, dispatch, state }, { trainingId, old} ) {
-      if (!state.player || state.player.name.trim() == "") return;
+      if (!state.player || state.player.name.trim() == "") {
+        M.toast({html: 'Es muss zuerst ein Name eingegeben werden!'})
+        return;
+      }
       
       if (state.player.playerId == -1) {
         await dispatch('savePlayer', {name: state.player.name})
