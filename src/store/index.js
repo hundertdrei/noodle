@@ -67,24 +67,30 @@ export default new Vuex.Store({
         return o
       })
 
-      let weeks = _.groupBy(trainings, "weekIndex");
+      // Get individual training, season dates
+      let trainingDates = _.map(trainings, "trainingDate");
+      let seasonDates = _.keys(state.seasons);
+      // A note on sorting: season dates are stored as strings - but since they're formatted as ISO
+      // dates lexicographical ordering correctly sorts by date.
+      seasonDates.sort();
 
-      let calendar = _.map(weeks, w => ({
-        "days": _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()),
-        "weekIndex": w[0].weekIndex
-      }));
+      // Put each training into a season "bucket" (identified by the season date) and group together
+      let buckets = bucket(trainingDates, seasonDates)
+      let seasonTrainings = _.groupBy(_.merge(trainings, _.map(buckets, o => ({ "seasonBucket": o }))), o => o.seasonBucket);
 
-      let weekIndices = _.map(calendar, "weekIndex")
+      // Assemble week-by-week calendar based on season buckets.
+      // This will also "split" weeks if a season date happens to fall into it.
+      let calendar = [];
+      _.forEach(seasonTrainings, (trainings, season) => {
+        let weeks = _.groupBy(trainings, "weekIndex");
+        let season_calendar = _.map(weeks, w => ({
+          "days": _.groupBy(w, o => dayjs(o.trainingDate).isoWeekday()),
+          "seasonBucket": season
+        }));
+        calendar.push(season_calendar);
+      });
 
-      let seasonWeeks = _.keys(state.seasons)
-
-      let buckets = bucket(weekIndices, seasonWeeks)
-
-      calendar = _.merge(calendar, _.map(buckets, o => ({"weekBucket": o})))
-      
-      let grouped = _.values(_.groupBy(calendar, "weekBucket"));
-
-      return _.sortBy(grouped, o => o[0].weekBucket);
+      return calendar;
     },
     apiToken (state, getters, rootState) {
       return rootState.auth.apiToken;
@@ -173,7 +179,7 @@ export default new Vuex.Store({
       }
     },
     updateSeasons (state, seasons) {
-      state.seasons = _.keyBy(seasons, o => dayjs(o.date).isoWeek() + 100 * dayjs(o.date).isoWeekYear());
+      state.seasons = _.keyBy(seasons, o => o.date);
     },
     updateSeason (state, season) {
       let key = _.findKey(state.seasons, o => o.date == season.date);

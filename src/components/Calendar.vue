@@ -2,8 +2,8 @@
   <div class="card">
     <div class="card-content">
       <div v-for="(calendarTable, i) in calendar" :key="i">
-      <h6 v-if="calendarTable[0].weekBucket != -1">
-        {{ seasons[calendarTable[0].weekBucket].name }}
+      <h6 v-if="calendarTable[0].seasonBucket != -1">
+        {{ seasons[calendarTable[0].seasonBucket].name }}
       </h6>
       <table>
         <tr>
