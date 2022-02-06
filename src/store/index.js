@@ -13,7 +13,7 @@ dayjs.extend(isoWeek)
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
-let refreshTime = 30 * 1000; // time in milliseconds
+let refreshTime = 5 * 60 * 1000; // time in milliseconds
 
 Vue.use(Vuex)
 
