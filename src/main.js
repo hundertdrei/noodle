@@ -5,11 +5,24 @@ import store from './store'
 import dayjs from 'dayjs'
 import Alt from '@/components/Alt'
 
+require('dayjs/locale/de')
+
+dayjs.locale('de')
+
 Vue.component('Alt', Alt)
 
 Vue.config.productionTip = false
 
 Vue.filter('dayjs', (x, format) => {
+  if (format == "dateshort") {
+    let locale = dayjs.locale();
+
+    if (locale == 'de') {
+      format = "DD.MM."
+    } else {
+      format = "DD/MM"
+    }
+  }
   return dayjs(x, "YYYY-MM-DD").format(format);
 })
 

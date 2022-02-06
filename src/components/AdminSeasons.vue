@@ -13,7 +13,7 @@
             <ul class="collection">
                 <li v-for="season in seasons" :key="season.seasonId" class="collection-item">
                     <p><router-link :to="'/admin/season/' + season.seasonId">{{ season.name }}</router-link></p>
-                    <p>Start: {{ season.date | dayjs("DD.MM.YYYY") }}</p>
+                    <p>Start: {{ season.date | dayjs("L") }}</p>
                 </li>
                 <li v-if="seasons.length == 0" class="collection-item">
                     <i>Noch keine Saisons vorhanden</i>

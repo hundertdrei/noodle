@@ -2,7 +2,7 @@
     <div class="card" v-if="season">
         <div class="card-content">
             <span class="card-title">{{ season.name }}</span>
-            <div>Start: {{ season.date | dayjs('DD.MM.YYYY' )}}</div>
+            <div>Start: {{ season.date | dayjs('L' )}}</div>
         </div>
         <div class="card-action">
             <router-link class="green-text" :to="`/admin/season/${season.seasonId}/edit`">Bearbeiten</router-link>

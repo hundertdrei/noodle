@@ -9,7 +9,7 @@
     @click="toggleAttendance({trainingId: trainingId, old: attend})"
   >
     <div class="text-bold">
-      {{ data.trainingDate | dayjs("D.M.") }} {{ data.course.titleShort }}
+      {{ data.trainingDate | dayjs("dateshort") }} {{ data.course.titleShort }}
     </div>
     <div>
         <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/> -

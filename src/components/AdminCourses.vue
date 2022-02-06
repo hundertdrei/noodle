@@ -10,9 +10,9 @@
         <ul class="collection">
           <li v-for="course in courses" :key="course.courseId" class="collection-item">
             <p><router-link :to="'/admin/course/' + course.courseId">{{ course.title }}</router-link></p>
-            <p>{{ course.dateBegin | dayjs("DD.MM.YYYY") }} - {{ course.dateEnd | dayjs("DD.MM.YYYY")  }}</p>
+            <p>{{ course.dateBegin | dayjs("L") }} - {{ course.dateEnd | dayjs("L")  }}</p>
             <p>{{ course.dayOfWeek | weekdayName}}</p>
-            <p>{{ course.timeBegin | timejs("HH:mm")  }} - {{ course.timeEnd | timejs("HH:mm")}}</p>
+            <p>{{ course.timeBegin | timejs("LT")  }} - {{ course.timeEnd | timejs("LT")}}</p>
           </li>
         </ul>
       </div>

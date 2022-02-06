@@ -5,11 +5,13 @@ import _ from 'lodash';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import M from 'materialize-css'
 import auth from '@/store/auth'
 
 dayjs.extend(weekOfYear)
 dayjs.extend(isoWeek)
+dayjs.extend(localizedFormat)
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 

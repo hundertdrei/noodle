@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-content">
       <span class="card-title" style="font-size:1.250rem; line-height: 1.2em;">{{ data.course.title }}</span>
-      <div class="text-bold">{{ data.trainingDate | dayjs('ddd, D.M.YYYY') }}</div>
+      <div class="text-bold">{{ data.trainingDate | dayjs('ddd, LL') }}</div>
       <hr>
       <div>
         <Alt :x="data.course.location" :y="data.location"/>

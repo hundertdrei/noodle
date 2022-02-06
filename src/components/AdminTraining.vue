@@ -1,6 +1,6 @@
 <template>
   <li class="collection-item">
-    {{ training.trainingDate | dayjs("dddd, DD.MM.YYYY") }}
+    {{ training.trainingDate | dayjs("dddd, LL") }}
     <span class="secondary-content">
       <i class="material-icons toggle-form" @click="toggleForm">more_vert</i>
     </span>
