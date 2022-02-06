@@ -665,11 +665,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteCourse', res.data.data.course.courseId)
+      if (isResultValid(res.data, 'Kurs konnte nicht gelöscht werden')) {
+        commit('deleteCourse', res.data.data.course.courseId)
 
-      M.toast({html: 'Kurs wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Kurs wurde gelöscht', classes: 'green' })
 
-      return res.data.data.course.courseId;
+        return true;
+      }
+      return false;
     },
     async deletePlayer ({commit, state}, playerId) {
       if (!playerId || playerId === -1) return;
