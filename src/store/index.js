@@ -689,11 +689,14 @@ export default new Vuex.Store({
           `
         }
       )
-      commit('deletePlayer', res.data.data.player.playerId)
+      if (isResultValid(res.data, 'Spielerin konnte nicht gelöscht werden')) {
+        commit('deletePlayer', res.data.data.player.playerId)
 
-      state.nextTrainings.map(o => commit('updateAttendance', {trainingId: o.trainingId, attend: null, player: {playerId}}))
+        state.nextTrainings.map(o => commit('updateAttendance', { trainingId: o.trainingId, attend: null, player: { playerId } }))
 
-      return res.data.data.player.playerId;
+        return true;
+      }
+      return false;
     },
     getSeasons ({ commit }) {
       axios.post(
