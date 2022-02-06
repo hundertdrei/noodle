@@ -120,8 +120,9 @@ export default {
       this.$emit("close");
     },
     async deleteTrainingLocal() {
-      await this.deleteTraining(this.training.trainingId);
-      this.$emit("close");
+      let succeeded = await this.deleteTraining(this.training.trainingId);
+      if(succeeded)
+        this.$emit("close");
     },
   },
 };

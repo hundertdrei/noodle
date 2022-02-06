@@ -633,14 +633,17 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteTraining', {
-        trainingId: res.data.data.training.trainingId,
-        courseId: res.data.data.training.courseId
-      })
+      if (isResultValid(res.data, 'Training konnte nicht gelöscht werden')) {
+        commit('deleteTraining', {
+          trainingId: res.data.data.training.trainingId,
+          courseId: res.data.data.training.courseId
+        })
 
-      M.toast({html: 'Training wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Training wurde gelöscht', classes: 'green' })
 
-      return res.data.data.training.trainingId;
+        return true;
+      }
+      return false;
     },
     async deleteCourse ({commit, getters}, courseId) {
       const res = await axios.post(
