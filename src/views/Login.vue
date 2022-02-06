@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <div class="card" v-if="error_message">
+    <div class="card" v-if="errorMessage">
       <div class="card-content error-content">
           <div class="error-title">Fehler</div>
-          <div>{{ error_message }}</div>
+          <div>{{ errorMessage }}</div>
       </div>
     </div>
     <div class="card">
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  props: ["error_message"],
+  props: ["errorMessage"],
   methods: {
     login () {
       this.$store.dispatch('auth/login');

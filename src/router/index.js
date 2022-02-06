@@ -79,7 +79,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
-    props: route  => ({ error_message: route.query.error_message }),
+    props: route  => ({ errorMessage: route.query.errorMessage }),
     async beforeEnter (to, from, next) {
       await store.dispatch('auth/initAuthentication')
       if (await store.dispatch('auth/isAuthenticated')) next("/admin")
@@ -94,7 +94,7 @@ const routes = [
         await store.dispatch('auth/handleRedirectCallback');
         next('/admin');
       } catch (error) {
-        next({ path: "/login", query: { error_message: error.message } });
+        next({ path: "/login", query: { errorMessage: error.message } });
       }
     }
   }
