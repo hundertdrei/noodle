@@ -18,10 +18,14 @@ export default {
     ...mapState(['nextTrainings'])
   },
   methods: {
-    ...mapActions(['getNextTrainings'])
+    ...mapActions(['getNextTrainings']),
+    refreshTrainings() {
+      this.getNextTrainings();
+    }
   },
   created () {
-    this.getNextTrainings()
-  }
+    this.getNextTrainings();
+    window.addEventListener('focus', this.refreshTrainings);
+  },
 }
 </script>
