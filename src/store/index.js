@@ -15,13 +15,13 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.use(Vuex)
 
-function error_toast(message) {
+function errorToast(message) {
   M.toast({ html: message, classes: 'red darken-4' });
 }
 
-function is_result_valid(res_data, message_prefix) {
-  if (res_data.errors) {
-    res_data.errors.forEach(error => error_toast(message_prefix + ': ' + error.message));
+function isResultValid(resData, messagePrefix) {
+  if (resData.errors) {
+    resData.errors.forEach(error => errorToast(messagePrefix + ': ' + error.message));
     return false;
   }
   return true;
@@ -372,7 +372,7 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        if (is_result_valid(res.data, 'Teilnahme konnte nicht aktualisiert werden')) {
+        if (isResultValid(res.data, 'Teilnahme konnte nicht aktualisiert werden')) {
           commit('updateAttendance', res.data.data.attendance.returning[0])
         }
       })
@@ -413,7 +413,7 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      if(is_result_valid(res.data, 'Spieler konnte nicht gespeichert werden')) {
+      if(isResultValid(res.data, 'Spieler konnte nicht gespeichert werden')) {
         commit('updatePlayer', res.data.data.player)
         commit('addPlayer', res.data.data.player)
       }
