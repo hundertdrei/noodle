@@ -75,7 +75,8 @@ export default new Vuex.Store({
     attendance: [],
     courses: [],
     seasons: {},
-    pendingRefreshTimeout: null
+    pendingRefreshTimeout: null,
+    lastPlayerToast: null,
   },
   getters: {
     calendar (state) {
@@ -354,7 +355,8 @@ export default new Vuex.Store({
     },
     async toggleAttendance({ commit, dispatch, state }, { trainingId, old} ) {
       if (!state.player || state.player.name.trim() == "") {
-        M.toast({html: 'Es muss zuerst ein Name eingegeben werden!'})
+        if (state.lastPlayerToast != null) state.lastPlayerToast.dismiss();
+        state.lastPlayerToast = M.toast({html: 'Es muss zuerst ein Name eingegeben werden!'})
         return;
       }
       
