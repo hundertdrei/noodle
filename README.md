@@ -108,3 +108,24 @@ docker run -d \
   -p 8080:80 \
   noodle-app
 ```
+
+## Export Metadata from Docker Container
+
+After changing the Hasura schema in the console you need to update it in the project directory
+
+1. Run shell in docker container 
+   ```
+   docker exec -it noodle-api bash
+   ```
+2. Create config file
+   ```
+   echo version: 3 >> config.yaml
+   ````
+3. Run export command
+   ```
+   hasura-cli metadata export --endpoint http://localhost:8080
+   ```
+4. Exit Container and copy metadata
+   ```
+   docker cp noodle-api:/metadata graphql/
+   ```

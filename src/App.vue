@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="grey lighten-3">
-    <nav>
+    <nav class="nav-extended">
       <div class="nav-wrapper theme-background">
         <a href="#" class="brand-logo right">
           <i class="material-icons">local_dining</i>
@@ -10,7 +10,14 @@
         >
         <ul id="nav-mobile" class="left hide-on-med-and-down">
           <li><router-link to="/">Home</router-link></li>
-          <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
+          <li v-if="authenticated"><router-link to="/admin/courses">Admin</router-link></li>
+        </ul>
+      </div>
+
+      <div class="nav-content light-blue darken-2" v-if="adminArea">
+        <ul class="tabs tabs-transparent">
+          <li class="tab"><router-link to="/admin/courses">Kurse</router-link></li>
+          <li class="tab"><router-link to="/admin/seasons">Saisons</router-link></li>
         </ul>
       </div>
     </nav>
@@ -20,16 +27,15 @@
       <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
     </ul>
 
-    <div class="container">
-    <div class="row">
-      <div class="col s12">
-        <div class="card">
-              <div class="splash"></div>
+    <div class="container" v-if="!adminArea">
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+                <div class="splash"></div>
+          </div>
         </div>
       </div>
     </div>
-    </div>
-
 
     <router-view />
 
@@ -46,13 +52,17 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   computed: {
-    ...mapState('auth', ['authenticated'])
+    ...mapState('auth', ['authenticated']),
+    adminArea () {
+      return this.$route.matched.some(({path}) => path == '/admin')
+    }
   },
   methods: {
     ...mapActions('auth', ['logout'])
   },
   mounted () {
     let elem = this.$refs["sidenav"];
+
     M.Sidenav.init(elem);
 
     // Copy noodle color defined in SCSS into 'theme-color' meta attribute

@@ -3,10 +3,13 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import Admin from '@/views/Admin.vue'
 
+import AdminCourses from '@/components/AdminCourses.vue'
 import AdminCourse from '@/components/AdminCourse.vue'
-import AdminOverview from '@/components/AdminOverview.vue'
 import AdminCourseForm from '@/components/AdminCourseForm.vue'
 
+import AdminSeasons from '@/components/AdminSeasons.vue'
+import AdminSeason from '@/components/AdminSeason.vue'
+import AdminSeasonForm from '@/components/AdminSeasonForm.vue'
 
 import Login from '@/views/Login.vue'
 import store from '@/store'
@@ -35,8 +38,8 @@ const routes = [
     component: Admin,
     children: [
       {
-        path: '',
-        component: AdminOverview
+        path: 'courses',
+        component: AdminCourses
       },
       {
         path: 'course/new',
@@ -50,6 +53,24 @@ const routes = [
       {
         path: 'course/:id/edit',
         component: AdminCourseForm,
+        props: true
+      },
+      { 
+        path: 'seasons',
+        component: AdminSeasons
+      },
+      {
+        path: 'season/new',
+        component: AdminSeasonForm
+      },
+      {
+        path: 'season/:id',
+        component: AdminSeason,
+        props: true
+      },
+      {
+        path: 'season/:id/edit',
+        component: AdminSeasonForm,
         props: true
       },
     ]
