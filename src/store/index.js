@@ -373,7 +373,6 @@ export default new Vuex.Store({
       )
       .then(res => {
         if (is_result_valid(res.data, 'Teilnahme konnte nicht aktualisiert werden')) {
-          console.log(res.data.data.attendance)
           commit('updateAttendance', res.data.data.attendance.returning[0])
         }
       })
