@@ -20,6 +20,7 @@ function errorToast(message) {
 }
 
 function isResultValid(resData, messagePrefix) {
+  if (!resData) return false;
   if (resData.errors) {
     resData.errors.forEach(error => errorToast(messagePrefix + ': ' + error.message));
     return false;
