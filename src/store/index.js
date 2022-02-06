@@ -59,7 +59,8 @@ export default new Vuex.Store({
     trainings: [],
     attendance: [],
     courses: [],
-    seasons: {}
+    seasons: {},
+    pendingRefreshTimeout: null
   },
   getters: {
     calendar (state) {
@@ -195,7 +196,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    getNextTrainings ({ commit, dispatch }) {
+    getNextTrainings ({ commit, dispatch, state }) {
       let lower = dayjs().format('YYYY-MM-DD')
        axios.post('', {
          query: `
@@ -228,7 +229,9 @@ export default new Vuex.Store({
        })
        .then(res => commit('updateNextTrainings', res.data.data.trainings))
        .catch(handleAPIError)
-       setTimeout(function() { dispatch('getNextTrainings') }, refreshTime)
+
+      if (state.pendingRefreshTimeout != null) clearTimeout(state.pendingRefreshTimeout);
+      state.pendingRefreshTimeout = setTimeout(function () { dispatch('getNextTrainings') }, refreshTime);
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
