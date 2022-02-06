@@ -13,6 +13,8 @@ dayjs.extend(isoWeek)
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
+let refreshTime = 30 * 1000; // time in milliseconds
+
 Vue.use(Vuex)
 
 function handleAPIError(error) {
@@ -193,7 +195,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    getNextTrainings ({ commit }) {
+    getNextTrainings ({ commit, dispatch }) {
       let lower = dayjs().format('YYYY-MM-DD')
        axios.post('', {
          query: `
@@ -226,6 +228,7 @@ export default new Vuex.Store({
        })
        .then(res => commit('updateNextTrainings', res.data.data.trainings))
        .catch(handleAPIError)
+       setTimeout(function() { dispatch('getNextTrainings') }, refreshTime)
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
