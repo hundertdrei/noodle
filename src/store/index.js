@@ -739,12 +739,15 @@ export default new Vuex.Store({
           }
           )
           .catch(handleAPIError)
-          
-      commit('updateSeason', res.data.data.season)
 
-      M.toast({html: 'Saison wurde aktualisiert', classes: 'green'})
+      if (isResultValid(res.data, 'Saison konnte nicht aktualisiert werden')) {
+        commit('updateSeason', res.data.data.season)
 
-      return res.data.data.season.seasonId;
+        M.toast({ html: 'Saison wurde aktualisiert', classes: 'green' })
+
+        return res.data.data.season.seasonId;
+      }
+      return -1;
     },    
     async deleteSeason ({commit, getters}, id) {
       const res = await axios.post(
