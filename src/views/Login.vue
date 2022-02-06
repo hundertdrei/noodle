@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="card" v-if="errorMessage">
+      <div class="card-content error-content">
+          <div class="error-title">Fehler</div>
+          <div>{{ errorMessage }}</div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-content">
         <a @click="login" class="btn waves-effect waves-light">
@@ -13,6 +19,7 @@
 
 <script>
 export default {
+  props: ["errorMessage"],
   methods: {
     login () {
       this.$store.dispatch('auth/login');
@@ -21,8 +28,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "~materialize-css";
+
 .card-content {
   text-align: center;
 }
+.error-content {
+  @extend .red, .lighten-4;
+}
+.error-title {
+  font-weight: bold;
+}
+
 </style>
