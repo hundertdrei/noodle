@@ -783,11 +783,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteSeason', res.data.data.season.seasonId)
+      if (isResultValid(res.data, 'Saison konnte nicht gelöscht werden')) {
+        commit('deleteSeason', res.data.data.season.seasonId)
 
-      M.toast({html: 'Saison wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Saison wurde gelöscht', classes: 'green' })
 
-      return res.data.data.season.seasonId;
+        return true;
+      }
+      return false;
     },
   },
   modules: {
