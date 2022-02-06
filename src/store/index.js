@@ -525,11 +525,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('updateCourse', res.data.data.course)
+      if (isResultValid(res.data, 'Kurs konnte nicht aktualisiert werden')) {
+        commit('updateCourse', res.data.data.course)
 
-      M.toast({html: 'Kurs wurde aktualisiert', classes: 'green'})
+        M.toast({ html: 'Kurs wurde aktualisiert', classes: 'green' })
 
-      return res.data.data.course.courseId;
+        return res.data.data.course.courseId;
+      }
+      return -1;
     },
     fillTrainings({state, dispatch}, courseId) {
       let course = state.courses.filter(o => o.courseId == courseId)[0]
