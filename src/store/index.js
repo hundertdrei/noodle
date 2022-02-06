@@ -28,7 +28,7 @@ function isResultValid(resData, messagePrefix) {
 }
 
 function handleAPIError(error) {
-  alert("API ist nicht erreichbar: " + error);
+  errorToast("API ist nicht erreichbar: " + error);
 }
 
 // Split Values into Buckets
