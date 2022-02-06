@@ -604,8 +604,10 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        M.toast({html: 'Training wurde aktualisiert', classes: 'green'})
-        commit('updateTraining', res.data.data.training)
+        if (isResultValid(res.data, 'Training konnte nicht aktualisiert werden')) {
+          M.toast({ html: 'Training wurde aktualisiert', classes: 'green' })
+          commit('updateTraining', res.data.data.training)
+        }
       })
       .catch(handleAPIError)
 
