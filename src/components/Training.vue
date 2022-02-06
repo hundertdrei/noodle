@@ -17,7 +17,7 @@
       </div>
       <hr>
       <div class="green-text">
-        <div class="text-bold title-attending" @click="collapseAttending = !collapseAttending">
+        <div class="text-bold title-attending" @click="toggleCollapseAttending">
           Ich komme ({{ attending.length }})
           <span class="material-icons" v-if="collapseAttending">arrow_drop_down</span>
           <span class="material-icons" v-else>arrow_drop_up</span>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="red-text">
-        <div class="text-bold title-attending" :class="{collapsed: collapseNotAttending}" @click="collapseNotAttending = !collapseNotAttending">
+        <div class="text-bold title-attending" :class="{collapsed: collapseNotAttending}" @click="toggleCollapseNotAttending">
           Ich komme nicht ({{ notAttending.length }})          
           <span class="material-icons" v-if="collapseNotAttending">arrow_drop_down</span>
           <span class="material-icons" v-else>arrow_drop_up</span>
@@ -50,10 +50,21 @@ import _ from 'lodash'
 export default {
   name: "Training",
   props: ["data"],
+  emits: ["refreshTrainings"],
   data () {
     return {
       collapseAttending: false,
       collapseNotAttending: true
+    }
+  },
+  methods: {
+    toggleCollapseAttending() {
+      this.collapseAttending = !this.collapseAttending;
+      if(!this.collapseAttending) { this.$emit('refreshTrainings'); }
+    },
+    toggleCollapseNotAttending() {
+      this.collapseNotAttending = !this.collapseNotAttending;
+      if(!this.collapseNotAttending) { this.$emit('refreshTrainings'); }
     }
   },
   computed: {

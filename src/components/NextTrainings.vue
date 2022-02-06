@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Training v-for="training in nextTrainings" :data="training" :key="training.trainingId" />
+        <Training v-for="training in nextTrainings" :data="training" :key="training.trainingId" @refreshTrainings="refreshTrainings" />
     </div>
 </template>
 
