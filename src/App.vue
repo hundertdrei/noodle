@@ -9,8 +9,8 @@
           ><i class="material-icons">menu</i></a
         >
         <ul id="nav-mobile" class="left hide-on-med-and-down">
-          <li><router-link to="/">Home</router-link></li>
-          <li v-if="authenticated"><router-link to="/admin/courses">Admin</router-link></li>
+          <li><router-link to="/"><i class="material-icons left">ramen_dining</i>Home</router-link></li>
+          <li v-if="authenticated"><router-link to="/admin/courses"><i class="material-icons left">settings</i>Admin</router-link></li>
         </ul>
       </div>
 
@@ -23,8 +23,8 @@
     </nav>
 
     <ul class="sidenav" ref="sidenav" id="mobile-demo">
-      <li><router-link to="/">Home</router-link></li>
-      <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
+      <li><router-link to="/"><i class="material-icons">ramen_dining</i>Home</router-link></li>
+      <li v-if="authenticated"><router-link to="/admin"><i class="material-icons">settings</i>Admin</router-link></li>
     </ul>
 
     <div class="container" v-if="!adminArea">
