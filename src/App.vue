@@ -82,7 +82,8 @@ $noodle-color: #01579b;
 $secondary-color: $noodle-color;
 
 @import "~materialize-css";
-@import "~material-design-icons/iconfont/material-icons.css";
+$material-design-icons-font-path: '~@material-design-icons/font/';
+@import "~@material-design-icons/font/filled.css";
 
 .theme-background {
   background: var(--noodle-color);

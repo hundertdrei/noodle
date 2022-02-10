@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.15.0",
+    "@material-design-icons/font": "^0.10.6",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "dayjs": "^1.10.5",
     "lodash": "^4.17.21",
-    "material-design-icons": "^3.0.1",
     "materialize-css": "^1.0.0-rc.2",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
