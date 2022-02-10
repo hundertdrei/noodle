@@ -2,9 +2,9 @@
   <div id="app" class="grey lighten-3">
     <nav class="nav-extended">
       <div class="nav-wrapper theme-background">
-        <a href="#" class="brand-logo right">
-          <i class="material-icons">local_dining</i>
-        </a>
+        <ul id="nav-mobile" class="right">
+          <li><a href="#attendance"><i class="material-icons left">event_available</i><span class="hide-on-med-and-down">Teilnahme</span></a></li>
+        </ul>
         <a href="#" data-target="mobile-demo" class="sidenav-trigger"
           ><i class="material-icons">menu</i></a
         >
@@ -25,6 +25,8 @@
     <ul class="sidenav" ref="sidenav" id="mobile-demo">
       <li><router-link to="/"><i class="material-icons">ramen_dining</i>Home</router-link></li>
       <li v-if="authenticated"><router-link to="/admin"><i class="material-icons">settings</i>Admin</router-link></li>
+      <li><div class="divider"></div></li>
+      <li><a href="#attendance" class="sidenav-close"><i class="material-icons left">event_available</i>Teilnahme</a></li>
     </ul>
 
     <div class="container" v-if="!adminArea">
