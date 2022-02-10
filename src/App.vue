@@ -27,6 +27,9 @@
       <li v-if="authenticated"><router-link to="/admin" class="sidenav-close"><i class="material-icons">settings</i>Admin</router-link></li>
       <li><div class="divider"></div></li>
       <li><a href="#attendance" class="sidenav-close"><i class="material-icons left">event_available</i>Teilnahme</a></li>
+      <li><div class="divider"></div></li>
+      <li><a v-if="authenticated" @click="logout" class="sidenav-close"><i class="material-icons left">logout</i>Logout</a>
+      <router-link v-else to="/login" class="sidenav-close"><i class="material-icons left">login</i>Login</router-link></li>
     </ul>
 
     <div class="container" v-if="!adminArea">
