@@ -23,8 +23,8 @@
     </nav>
 
     <ul class="sidenav" ref="sidenav" id="mobile-demo">
-      <li><router-link to="/"><i class="material-icons">ramen_dining</i>Home</router-link></li>
-      <li v-if="authenticated"><router-link to="/admin"><i class="material-icons">settings</i>Admin</router-link></li>
+      <li><router-link to="/" class="sidenav-close"><i class="material-icons">ramen_dining</i>Home</router-link></li>
+      <li v-if="authenticated"><router-link to="/admin" class="sidenav-close"><i class="material-icons">settings</i>Admin</router-link></li>
       <li><div class="divider"></div></li>
       <li><a href="#attendance" class="sidenav-close"><i class="material-icons left">event_available</i>Teilnahme</a></li>
     </ul>
