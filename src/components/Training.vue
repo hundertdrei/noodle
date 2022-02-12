@@ -50,7 +50,6 @@ import _ from 'lodash'
 export default {
   name: "Training",
   props: ["data"],
-  emits: ["refreshTrainings"],
   data () {
     return {
       collapseAttending: false,
@@ -60,11 +59,11 @@ export default {
   methods: {
     toggleCollapseAttending() {
       this.collapseAttending = !this.collapseAttending;
-      if(!this.collapseAttending) { this.$emit('refreshTrainings'); }
+      this.$store.dispatch('getNextTrainings');
     },
     toggleCollapseNotAttending() {
       this.collapseNotAttending = !this.collapseNotAttending;
-      if(!this.collapseNotAttending) { this.$emit('refreshTrainings'); }
+      this.$store.dispatch('getNextTrainings');
     }
   },
   computed: {

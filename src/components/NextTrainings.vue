@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Training v-for="training in nextTrainings" :data="training" :key="training.trainingId" @refreshTrainings="refreshTrainings" />
+        <Training v-for="training in nextTrainings" :data="training" :key="training.trainingId" />
     </div>
 </template>
 
@@ -18,14 +18,11 @@ export default {
     ...mapState(['nextTrainings'])
   },
   methods: {
-    ...mapActions(['getNextTrainings']),
-    refreshTrainings() {
-      this.getNextTrainings();
-    }
+    ...mapActions(['getNextTrainings'])
   },
   created () {
     this.getNextTrainings();
-    window.addEventListener('focus', this.refreshTrainings);
+    window.addEventListener('focus', this.getNextTrainings);
   },
 }
 </script>
