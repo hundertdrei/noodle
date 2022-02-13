@@ -4,9 +4,9 @@
       <div class="card-content">
         <span class="card-title">{{ course.title }} ({{ course.titleShort }})</span>
         <div>Ort: {{ course.location }}</div>
-        <div>Zeitraum: {{ course.dateBegin | dayjs("DD.MM.YYYY") }} bis {{ course.dateEnd | dayjs("DD.MM.YYYY")}}</div>
+        <div>Zeitraum: {{ course.dateBegin | dayjs("L") }} bis {{ course.dateEnd | dayjs("L")}}</div>
         <div>Wochentag: {{ course.dayOfWeek | weekdayName }}</div>
-        <div>Uhrzeit: {{ course.timeBegin | timejs("HH:mm") }} - {{ course.timeEnd | timejs("HH:mm") }}</div>
+        <div>Uhrzeit: {{ course.timeBegin | timejs("LT") }} - {{ course.timeEnd | timejs("LT") }}</div>
         <div>Kommentar: {{ course.comment }}</div>
       </div>
       <div class="card-action">
