@@ -12,8 +12,7 @@
       {{ data.trainingDate | dayjs("dateshort") }} {{ data.course.titleShort }}
     </div>
     <div>
-        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/> -
-        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
+        <TrainingTimeRange :defaultObj="data.course" :altObj="data" />
     </div>
     <div>
         <Alt :x="data.course.location" :y="data.location"/>
@@ -22,11 +21,15 @@
 </template>
 
 <script>
+import TrainingTimeRange from "@/components/TrainingTimeRange"
 import { mapActions } from 'vuex';
 
 export default {
   name: "CalendarEntry",
   props: ["data", "attend", "trainingId"],
+  components: {
+    TrainingTimeRange
+  },
   methods: {
       ...mapActions(["toggleAttendance"])
   },
