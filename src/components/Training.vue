@@ -17,7 +17,7 @@
       </div>
       <hr>
       <div class="green-text">
-        <div class="text-bold title-attending" @click="collapseAttending = !collapseAttending">
+        <div class="text-bold title-attending" @click="toggleCollapseAttending">
           Ich komme ({{ attending.length }})
           <span class="material-icons" v-if="collapseAttending">arrow_drop_down</span>
           <span class="material-icons" v-else>arrow_drop_up</span>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="red-text">
-        <div class="text-bold title-attending" :class="{collapsed: collapseNotAttending}" @click="collapseNotAttending = !collapseNotAttending">
+        <div class="text-bold title-attending" :class="{collapsed: collapseNotAttending}" @click="toggleCollapseNotAttending">
           Ich komme nicht ({{ notAttending.length }})          
           <span class="material-icons" v-if="collapseNotAttending">arrow_drop_down</span>
           <span class="material-icons" v-else>arrow_drop_up</span>
@@ -54,6 +54,16 @@ export default {
     return {
       collapseAttending: false,
       collapseNotAttending: true
+    }
+  },
+  methods: {
+    toggleCollapseAttending() {
+      this.collapseAttending = !this.collapseAttending;
+      this.$store.dispatch('getNextTrainings');
+    },
+    toggleCollapseNotAttending() {
+      this.collapseNotAttending = !this.collapseNotAttending;
+      this.$store.dispatch('getNextTrainings');
     }
   },
   computed: {
