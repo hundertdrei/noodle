@@ -21,7 +21,8 @@ export default {
     ...mapActions(['getNextTrainings'])
   },
   created () {
-    this.getNextTrainings()
-  }
+    this.getNextTrainings();
+    window.addEventListener('focus', this.getNextTrainings);
+  },
 }
 </script>

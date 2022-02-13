@@ -15,6 +15,8 @@ dayjs.extend(localizedFormat)
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
+let refreshTime = 5 * 60 * 1000; // time in milliseconds
+
 Vue.use(Vuex)
 
 function errorToast(message) {
@@ -72,7 +74,8 @@ export default new Vuex.Store({
     trainings: [],
     attendance: [],
     courses: [],
-    seasons: {}
+    seasons: {},
+    pendingRefreshTimeout: null
   },
   getters: {
     calendar (state) {
@@ -208,7 +211,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    getNextTrainings ({ commit }) {
+    getNextTrainings ({ commit, dispatch, state }) {
       let lower = dayjs().format('YYYY-MM-DD')
        axios.post('', {
          query: `
@@ -241,6 +244,9 @@ export default new Vuex.Store({
        })
        .then(res => commit('updateNextTrainings', res.data.data.trainings))
        .catch(handleAPIError)
+
+      if (state.pendingRefreshTimeout != null) clearTimeout(state.pendingRefreshTimeout);
+      state.pendingRefreshTimeout = setTimeout(function () { dispatch('getNextTrainings') }, refreshTime);
     },
     getTrainings ({ commit }) {
       let lower = dayjs().format('YYYY-MM-DD')
