@@ -79,6 +79,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+    props: route  => ({ errorMessage: route.query.errorMessage }),
     async beforeEnter (to, from, next) {
       await store.dispatch('auth/initAuthentication')
       if (await store.dispatch('auth/isAuthenticated')) next("/admin")
@@ -89,9 +90,12 @@ const routes = [
     path: '/callback',
     async beforeEnter (to, from, next) {
       await store.dispatch('auth/initAuthentication')
-      await store.dispatch('auth/handleRedirectCallback');
-
-      next('/admin')
+      try {
+        await store.dispatch('auth/handleRedirectCallback');
+        next('/admin');
+      } catch (error) {
+        next({ path: "/login", query: { errorMessage: error.message } });
+      }
     }
   }
 ]

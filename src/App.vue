@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="grey lighten-3">
     <nav class="nav-extended">
-      <div class="nav-wrapper light-blue darken-4">
+      <div class="nav-wrapper theme-background">
         <a href="#" class="brand-logo right">
           <i class="material-icons">local_dining</i>
         </a>
@@ -64,15 +64,29 @@ export default {
     let elem = this.$refs["sidenav"];
 
     M.Sidenav.init(elem);
+
+    // Copy noodle color defined in SCSS into 'theme-color' meta attribute
+    var noodle_color = getComputedStyle(document.body).getPropertyValue("--noodle-color");
+    document.head.innerHTML += `<meta name="theme-color" content="${noodle_color}" />`;
   },
 };
 </script>
 
 <style lang="scss">
-$secondary-color: #01579b;
+$noodle-color: #01579b;
+
+:root {
+  --noodle-color: #{$noodle-color};
+}
+
+$secondary-color: $noodle-color;
 
 @import "~materialize-css";
 @import "~material-design-icons/iconfont/material-icons.css";
+
+.theme-background {
+  background: var(--noodle-color);
+}
 
 .text-bold {
   font-weight: bold;

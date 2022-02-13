@@ -17,8 +17,21 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.use(Vuex)
 
+function errorToast(message) {
+  M.toast({ html: message, classes: 'red darken-4' });
+}
+
+function isResultValid(resData, messagePrefix) {
+  if (!resData) return false;
+  if (resData.errors) {
+    resData.errors.forEach(error => errorToast(messagePrefix + ': ' + error.message));
+    return false;
+  }
+  return true;
+}
+
 function handleAPIError(error) {
-  alert("API ist nicht erreichbar: " + error);
+  errorToast("API ist nicht erreichbar: " + error);
 }
 
 // Split Values into Buckets
@@ -362,7 +375,9 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        commit('updateAttendance', res.data.data.attendance.returning[0])
+        if (isResultValid(res.data, 'Teilnahme konnte nicht aktualisiert werden')) {
+          commit('updateAttendance', res.data.data.attendance.returning[0])
+        }
       })
       .catch(handleAPIError)
     },
@@ -401,8 +416,10 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('updatePlayer', res.data.data.player)
-      commit('addPlayer', res.data.data.player)
+      if(isResultValid(res.data, 'Spieler konnte nicht gespeichert werden')) {
+        commit('updatePlayer', res.data.data.player)
+        commit('addPlayer', res.data.data.player)
+      }
     },
     getCourses ({ commit }) {
       axios.post(
