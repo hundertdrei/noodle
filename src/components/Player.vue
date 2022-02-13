@@ -114,6 +114,10 @@ export default {
     this.modal = M.Modal.init(modal, {
       onOpenStart: () => this.newPlayerName = this.playerName
     });
+
+    if (localStorage.playerName) {
+      this.playerName = localStorage.playerName;
+    }
   },
   watch: {
     choices: function (val) {
@@ -121,6 +125,9 @@ export default {
     },
     localPlayer: function () {
       this.updatePlayer();
+    },
+    playerName: function (newName) {
+      localStorage.playerName = newName;
     },
   },
 };
