@@ -27,7 +27,7 @@ export default {
         redirect_uri: process.env.VUE_APP_AUTH0_REDIRECT_URL
       }).then(auth0 => {
         // Update authenticated flag after auth0 was created
-        dispatch('isAuth0Authenticated', auth0);
+        dispatch('auth0AuthenticationCheck', auth0);
         return auth0;
       });
     },
@@ -36,7 +36,7 @@ export default {
       await auth0.handleRedirectCallback()
     },
     // Set authenticated flag from an explicit auth0 instance
-    async isAuth0Authenticated({ commit }, auth0) {
+    async auth0AuthenticationCheck({ commit }, auth0) {
       const authenticated = await auth0.isAuthenticated();
 
       if (authenticated) {
@@ -50,7 +50,7 @@ export default {
     // Set authenticated flag from an state auth0
     async isAuthenticated({ state, dispatch }) {
       let auth0 = await state.auth0;
-      return await dispatch('isAuth0Authenticated', auth0);
+      return await dispatch('auth0AuthenticationCheck', auth0);
     },
     async logout({ state }) {
       let auth0 = await state.auth0;
