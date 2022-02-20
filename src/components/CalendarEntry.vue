@@ -9,12 +9,12 @@
     @click="toggleAttendance({trainingId: trainingId, old: attend})"
   >
     <div class="text-bold">
-      {{ data.trainingDate | dayjs("dateshort") }} {{ data.course.titleShort }}
+      {{ data.trainingDate | dayjs("dateshort") }} <span v-if="!common.titleShort || data.titleShort">{{ data.course.titleShort }}</span>
     </div>
-    <div>
+    <div v-if="!common.time || data.timeBegin || data.timeEnd">
         <TrainingTimeRange :defaultObj="data.course" :altObj="data" />
     </div>
-    <div>
+    <div v-if="!common.location || data.location">
         <Alt :x="data.course.location" :y="data.location"/>
     </div>
   </div>
@@ -26,7 +26,7 @@ import { mapActions } from 'vuex';
 
 export default {
   name: "CalendarEntry",
-  props: ["data", "attend", "trainingId"],
+  props: ["data", "attend", "trainingId", "common"],
   components: {
     TrainingTimeRange
   },
