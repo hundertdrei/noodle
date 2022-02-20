@@ -7,7 +7,7 @@
       </h6>
       <table>
         <tr>
-          <th class="calender-head" v-for="(day, j) in calendarDays(calendarTable)" :key="j">
+          <th class="calender-head" v-for="(day, j) in calendarDays(calendarTable)" :key="j" :colspan="day.numCourses" :style="{ width: cellsWidth(calendarTable) }">
             {{ day.day | weekdayName }}
             <div class="minor" v-if="day.common.titleShort">{{ day.common.titleShort }}</div>
             <div class="minor" v-if="day.common.time">
@@ -17,13 +17,12 @@
           </th>
         </tr>
         <tr v-for="(week, i) in calendarTable" :key="i">
-          <td v-for="(day, j) in calendarDays(calendarTable)" :key="j">
+          <td v-for="(day, j) in calendarCourses(calendarTable, week)" :key="j">
             <CalendarEntry
-              v-for="training in week.days[day.day]"
-              :key="training.trainingId"
-              :data="training"
-              :attend="attend(training.trainingId)"
-              :trainingId="training.trainingId"
+              v-if="day"
+              :data="day"
+              :attend="attend(day.trainingId)"
+              :trainingId="day.trainingId"
               :common="day.common"
             />
           </td>
@@ -93,8 +92,35 @@ export default {
         if(commonTimeBegin && commonTimeEnd) {
           dayObj.common.time = { timeBegin: commonTimeBegin, timeEnd: commonTimeEnd };
         }
+
+        dayObj.numCourses = courses.length;
       });
       return dayObjs;
+    },
+    calendarCourses (table, week) {
+      let dayObjs = this.calendarDays(table);
+      /* calendarDays produces a "week" array, with each entry representing a weekday that has courses.
+       * A weekday can have multiple courses.
+       *
+       * For generating a row in the table we want to 'flatten' so we have an entry for each _course_.
+       * But this also needs to be _complete_, ie if a course does not exist/is in the past we still
+       * need to produce an entry, otherwise things will appear at the wrong place in the table.
+       * We return 'null' entries if a course is not show.
+       */
+
+      // Adds 'common' member to a day object
+      let addCommonToDay = (dayInWeek, common) => dayInWeek ? _.assign({common: common }, dayInWeek) : null;
+      // Fills any missing courses with 'null'
+      let fillUpCourses = (days, numCourses) => (days.length < numCourses ? _.concat(days, _.times(numCourses - days.length, _.constant(null))) : days );
+      // Extracts courses in a specific week for a given day
+      let coursesForDay = (weekDays, day) => fillUpCourses(_.get(weekDays, day.day, []), day.numCourses);
+      // "Expand" & flatten week with days into courses
+      let courses = _.flatten(_.map(dayObjs, day => _.map(coursesForDay(week.days, day), dayInWeek => addCommonToDay(dayInWeek, day.common))));
+      return courses;
+    },
+    cellsWidth(table) {
+      let days = this.calendarDays(table);
+      return '' + (100 / days.length) + '%';
     },
   },
   created() {
