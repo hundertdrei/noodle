@@ -520,7 +520,7 @@ export default new Vuex.Store({
 
       if (d < startDate) d = d.add(7, 'day');
       
-      while (d < endDate) {
+      while (d <= endDate) {
         let dateFormatted = d.format('YYYY-MM-DD')
         let j = course.trainings.findIndex(o => o.trainingDate == dateFormatted)
         if (j == -1) {
