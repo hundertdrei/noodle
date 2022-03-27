@@ -324,30 +324,6 @@ export default new Vuex.Store({
 
       commit('updatePlayers', result.data.data.players)
     },
-    async getPlayersToken ({ commit, state }) {
-      const claims = await state.auth0.getIdTokenClaims()
-      const result = await axios.post(
-        '',
-        {
-          query: `
-            query {
-              players: dim_player {
-                playerName: player_name
-                playerId: player_id
-              }
-            }
-          `
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${claims.__raw}`
-          }
-        }
-      )
-      .catch(handleAPIError)
-
-      commit('updatePlayers', result.data.data.players)
-    },
     setPlayer({ commit, dispatch }, player ) {
       commit('updatePlayer', player)
       dispatch('getPlayerAttendance')
