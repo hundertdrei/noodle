@@ -210,6 +210,9 @@ export default new Vuex.Store({
 
       Vue.delete(state.seasons, key)
     },
+    setToast(state, toast) {
+      state.lastToast = toast;
+    }
   },
   actions: {
     getNextTrainings ({ commit, dispatch, state }) {
@@ -353,10 +356,16 @@ export default new Vuex.Store({
       commit('updatePlayer', player)
       dispatch('getPlayerAttendance')
     },
+    /* Pops up a toast, but also dismisses any previous 'singular' toast,
+       ie only one is visible at any time */
+    popupSingularToast({ commit, state }, message) {
+      if (state.lastToast != null) state.lastToast.dismiss();
+      let toast = M.toast({ html: message });
+      commit('setToast', toast);
+  },
     async toggleAttendance({ commit, dispatch, state }, { trainingId, old} ) {
       if (!state.player || state.player.name.trim() == "") {
-        if (state.lastPlayerToast != null) state.lastPlayerToast.dismiss();
-        state.lastPlayerToast = M.toast({html: 'Es muss zuerst ein Name eingegeben werden!'})
+        dispatch('popupSingularToast', 'Es muss zuerst ein Name eingegeben werden!');
         return;
       }
       
