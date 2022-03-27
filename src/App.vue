@@ -77,6 +77,7 @@ $noodle-color: #01579b;
 
 :root {
   --noodle-color: #{$noodle-color};
+  --color-gray1: #ccc;
 }
 
 $secondary-color: $noodle-color;

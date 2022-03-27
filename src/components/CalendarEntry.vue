@@ -8,18 +8,18 @@
     }"
     @click="toggleAttendance({trainingId: trainingId, old: attend})"
   >
+    <div class="more-info" @click="showDetails" ref="more-info">
+      <i class="material-icons">info_outline</i>
+    </div>
     <div class="text-bold">
-      {{ data.trainingDate | dayjs("dateshort") }} {{ data.course.titleShort }}
+      <span class="training-date">{{ data.trainingDate | dayjs("dateshort") }}</span>&nbsp;
+      <span class="training-title">{{ data.course.titleShort }}</span>
     </div>
-    <div>
-        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/> -
-        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
-    </div>
-    <div>
-        <Alt :x="data.course.location" :y="data.location"/>
+    <div class="training-details" v-if="details">
+      {{ data }}
     </div>
   </div>
-</template>
+</template>e
 
 <script>
 import { mapActions } from 'vuex';
@@ -27,13 +27,28 @@ import { mapActions } from 'vuex';
 export default {
   name: "CalendarEntry",
   props: ["data", "attend", "trainingId"],
+  data() {
+    return {
+      details: false
+    }
+  },
   methods: {
-      ...mapActions(["toggleAttendance"])
+      ...mapActions(["toggleAttendance"]),
+      showDetails () {
+        this.details = true;
+      }
   },
   computed: {
     formatTime () {
       return function (x) { return this.$options.filters.timejs(x, "HH:mm") }
     }
+  },
+  mounted () {
+    window.addEventListener("click", (e) => {
+      if (!this.$refs["more-info"].contains(e.target)) {
+        this.details = false;
+      }
+    })
   }
 };
 </script>
@@ -54,5 +69,25 @@ export default {
 
 .calendar-entry.red:hover {
   background-color: #d32f2f !important;
+}
+
+.training-title {
+  white-space: nowrap;
+}
+
+.more-info {
+  float: right;
+  display: infalseline;
+}
+
+.more-info i {
+  font-size: 1.4em;
+  color: var(--color-gray1);
+}
+
+.training-details {
+  position: absolute;
+  background: white;
+  border: 1px black solid;
 }
 </style>
