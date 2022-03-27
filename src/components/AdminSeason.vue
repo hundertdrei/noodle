@@ -37,9 +37,10 @@ export default {
     async deleteSeasonLocal (date) {
       if (!confirm('Soll diese Saison wirklich gelöscht werden?')) return;
       
-      await this.deleteSeason(date);
+      let succeeded = await this.deleteSeason(date);
 
-      this.$router.push('/admin/seasons')
+      if(succeeded)
+        this.$router.push('/admin/seasons')
     },
   },
 };

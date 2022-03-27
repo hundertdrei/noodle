@@ -84,7 +84,8 @@ export default {
     async save() {
       let seasonId = await this.saveSeason(this.values);
 
-      this.$router.push({ path: "/admin/season/" + seasonId });
+      if(seasonId != -1)
+        this.$router.push({ path: "/admin/season/" + seasonId });
     },
     cancel() {
       if (this.type == "edit") {

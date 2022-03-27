@@ -71,9 +71,10 @@ export default {
     async deleteCourseLocal (courseId) {
       if (!confirm('Soll der Kurs inkl. aller Trainingstermine wirklich gelöscht werden?')) return;
       
-      await this.deleteCourse(courseId);
+      let succeeded = await this.deleteCourse(courseId);
 
-      this.$router.push('/admin')
+      if(succeeded)
+        this.$router.push('/admin')
     },
     addTrainingDialog() {
       if (this.newTrainingForm === null) {

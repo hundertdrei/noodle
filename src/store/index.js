@@ -324,30 +324,6 @@ export default new Vuex.Store({
 
       commit('updatePlayers', result.data.data.players)
     },
-    async getPlayersToken ({ commit, state }) {
-      const claims = await state.auth0.getIdTokenClaims()
-      const result = await axios.post(
-        '',
-        {
-          query: `
-            query {
-              players: dim_player {
-                playerName: player_name
-                playerId: player_id
-              }
-            }
-          `
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${claims.__raw}`
-          }
-        }
-      )
-      .catch(handleAPIError)
-
-      commit('updatePlayers', result.data.data.players)
-    },
     setPlayer({ commit, dispatch }, player ) {
       commit('updatePlayer', player)
       dispatch('getPlayerAttendance')
@@ -525,11 +501,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('updateCourse', res.data.data.course)
+      if (isResultValid(res.data, 'Kurs konnte nicht aktualisiert werden')) {
+        commit('updateCourse', res.data.data.course)
 
-      M.toast({html: 'Kurs wurde aktualisiert', classes: 'green'})
+        M.toast({ html: 'Kurs wurde aktualisiert', classes: 'green' })
 
-      return res.data.data.course.courseId;
+        return res.data.data.course.courseId;
+      }
+      return -1;
     },
     fillTrainings({state, dispatch}, courseId) {
       let course = state.courses.filter(o => o.courseId == courseId)[0]
@@ -541,7 +520,7 @@ export default new Vuex.Store({
 
       if (d < startDate) d = d.add(7, 'day');
       
-      while (d < endDate) {
+      while (d <= endDate) {
         let dateFormatted = d.format('YYYY-MM-DD')
         let j = course.trainings.findIndex(o => o.trainingDate == dateFormatted)
         if (j == -1) {
@@ -601,8 +580,10 @@ export default new Vuex.Store({
         }
       )
       .then(res => {
-        M.toast({html: 'Training wurde aktualisiert', classes: 'green'})
-        commit('updateTraining', res.data.data.training)
+        if (isResultValid(res.data, 'Training konnte nicht aktualisiert werden')) {
+          M.toast({ html: 'Training wurde aktualisiert', classes: 'green' })
+          commit('updateTraining', res.data.data.training)
+        }
       })
       .catch(handleAPIError)
 
@@ -628,14 +609,17 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteTraining', {
-        trainingId: res.data.data.training.trainingId,
-        courseId: res.data.data.training.courseId
-      })
+      if (isResultValid(res.data, 'Training konnte nicht gelöscht werden')) {
+        commit('deleteTraining', {
+          trainingId: res.data.data.training.trainingId,
+          courseId: res.data.data.training.courseId
+        })
 
-      M.toast({html: 'Training wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Training wurde gelöscht', classes: 'green' })
 
-      return res.data.data.training.trainingId;
+        return true;
+      }
+      return false;
     },
     async deleteCourse ({commit, getters}, courseId) {
       const res = await axios.post(
@@ -657,11 +641,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteCourse', res.data.data.course.courseId)
+      if (isResultValid(res.data, 'Kurs konnte nicht gelöscht werden')) {
+        commit('deleteCourse', res.data.data.course.courseId)
 
-      M.toast({html: 'Kurs wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Kurs wurde gelöscht', classes: 'green' })
 
-      return res.data.data.course.courseId;
+        return true;
+      }
+      return false;
     },
     async deletePlayer ({commit, state}, playerId) {
       if (!playerId || playerId === -1) return;
@@ -678,11 +665,14 @@ export default new Vuex.Store({
           `
         }
       )
-      commit('deletePlayer', res.data.data.player.playerId)
+      if (isResultValid(res.data, 'Spielerin konnte nicht gelöscht werden')) {
+        commit('deletePlayer', res.data.data.player.playerId)
 
-      state.nextTrainings.map(o => commit('updateAttendance', {trainingId: o.trainingId, attend: null, player: {playerId}}))
+        state.nextTrainings.map(o => commit('updateAttendance', { trainingId: o.trainingId, attend: null, player: { playerId } }))
 
-      return res.data.data.player.playerId;
+        return true;
+      }
+      return false;
     },
     getSeasons ({ commit }) {
       axios.post(
@@ -739,12 +729,15 @@ export default new Vuex.Store({
           }
           )
           .catch(handleAPIError)
-          
-      commit('updateSeason', res.data.data.season)
 
-      M.toast({html: 'Saison wurde aktualisiert', classes: 'green'})
+      if (isResultValid(res.data, 'Saison konnte nicht aktualisiert werden')) {
+        commit('updateSeason', res.data.data.season)
 
-      return res.data.data.season.seasonId;
+        M.toast({ html: 'Saison wurde aktualisiert', classes: 'green' })
+
+        return res.data.data.season.seasonId;
+      }
+      return -1;
     },    
     async deleteSeason ({commit, getters}, id) {
       const res = await axios.post(
@@ -766,11 +759,14 @@ export default new Vuex.Store({
       )
       .catch(handleAPIError)
 
-      commit('deleteSeason', res.data.data.season.seasonId)
+      if (isResultValid(res.data, 'Saison konnte nicht gelöscht werden')) {
+        commit('deleteSeason', res.data.data.season.seasonId)
 
-      M.toast({html: 'Saison wurde gelöscht', classes: 'green'})
+        M.toast({ html: 'Saison wurde gelöscht', classes: 'green' })
 
-      return res.data.data.season.seasonId;
+        return true;
+      }
+      return false;
     },
   },
   modules: {

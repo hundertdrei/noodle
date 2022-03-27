@@ -142,8 +142,8 @@ export default {
     ...mapActions(["saveCourse"]),
     async save() {
       let courseId = await this.saveCourse(this.values);
-
-      this.$router.push({ path: "/admin/course/" + courseId });
+      if(courseId != -1)
+        this.$router.push({ path: "/admin/course/" + courseId });
     },
     cancel() {
       if (this.type == "edit") {

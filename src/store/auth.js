@@ -10,9 +10,6 @@ export default {
     }
   },
   mutations: {
-    setAuthenticationInstance(state, auth0) {
-      state.auth0 = auth0;
-    },
     setAuthenticated(state, value) {
       state.authenticated = value;
     },
@@ -21,38 +18,49 @@ export default {
     }
   },
   actions: {
-    async initAuthentication({ state, commit }) {
+    async initAuthentication({ state, dispatch }) {
       if (state.auth0 !== null) return;
 
-      const auth0 = await createAuth0Client({
+      state.auth0 = createAuth0Client({
         domain: process.env.VUE_APP_AUTH0_DOMAIN,
         client_id: process.env.VUE_APP_AUTH0_CLIENT_ID,
         redirect_uri: process.env.VUE_APP_AUTH0_REDIRECT_URL
+      }).then(auth0 => {
+        // Update authenticated flag after auth0 was created
+        dispatch('auth0AuthenticationCheck', auth0);
+        return auth0;
       });
-
-      commit("setAuthenticationInstance", auth0)
     },
     async handleRedirectCallback({ state }) {
-      await state.auth0.handleRedirectCallback()
+      let auth0 = await state.auth0;
+      await auth0.handleRedirectCallback()
     },
-    async isAuthenticated ({ state, commit }) {
-      const authenticated = await state.auth0.isAuthenticated();
+    // Set authenticated flag from an explicit auth0 instance
+    async auth0AuthenticationCheck({ commit }, auth0) {
+      const authenticated = await auth0.isAuthenticated();
 
       if (authenticated) {
-        const claims = await state.auth0.getIdTokenClaims()
+        const claims = await auth0.getIdTokenClaims()
         commit('setAPIToken', claims.__raw)
       }
       commit('setAuthenticated', authenticated)
 
       return authenticated;
     },
-    logout({ state }) {
-      state.auth0.logout({
+    // Set authenticated flag from an state auth0
+    async isAuthenticated({ state, dispatch }) {
+      let auth0 = await state.auth0;
+      return await dispatch('auth0AuthenticationCheck', auth0);
+    },
+    async logout({ state }) {
+      let auth0 = await state.auth0;
+      auth0.logout({
         returnTo: process.env.VUE_APP_AUTH0_RETURN_URL
       })
     },
-    login({ state }) {
-      state.auth0.loginWithRedirect()
+    async login({ state }) {
+      let auth0 = await state.auth0;
+      auth0.loginWithRedirect()
     },
   }
 }

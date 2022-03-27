@@ -23,7 +23,6 @@ const routes = [
     component: Home,
     async beforeEnter (to, from, next) {
       await store.dispatch('auth/initAuthentication')
-      await store.dispatch('auth/isAuthenticated');
       next();
     }
   },
