@@ -2,15 +2,15 @@
   <div id="app" class="grey lighten-3">
     <nav class="nav-extended">
       <div class="nav-wrapper theme-background">
-        <a href="#" class="brand-logo right">
-          <i class="material-icons">local_dining</i>
-        </a>
+        <ul id="nav-mobile" class="right">
+          <li><a href="#attendance"><i class="material-icons left">event_available</i><span class="hide-on-med-and-down">Teilnahme</span></a></li>
+        </ul>
         <a href="#" data-target="mobile-demo" class="sidenav-trigger"
           ><i class="material-icons">menu</i></a
         >
         <ul id="nav-mobile" class="left hide-on-med-and-down">
-          <li><router-link to="/">Home</router-link></li>
-          <li v-if="authenticated"><router-link to="/admin/courses">Admin</router-link></li>
+          <li><router-link to="/"><i class="material-icons left">ramen_dining</i>Home</router-link></li>
+          <li v-if="authenticated"><router-link to="/admin/courses"><i class="material-icons left">settings</i>Admin</router-link></li>
         </ul>
       </div>
 
@@ -23,8 +23,13 @@
     </nav>
 
     <ul class="sidenav" ref="sidenav" id="mobile-demo">
-      <li><router-link to="/">Home</router-link></li>
-      <li v-if="authenticated"><router-link to="/admin">Admin</router-link></li>
+      <li><router-link to="/" class="sidenav-close"><i class="material-icons">ramen_dining</i>Home</router-link></li>
+      <li v-if="authenticated"><router-link to="/admin" class="sidenav-close"><i class="material-icons">settings</i>Admin</router-link></li>
+      <li><div class="divider"></div></li>
+      <li><a href="#attendance" class="sidenav-close"><i class="material-icons left">event_available</i>Teilnahme</a></li>
+      <li><div class="divider"></div></li>
+      <li><a v-if="authenticated" @click="logout" class="sidenav-close"><i class="material-icons left">logout</i>Logout</a>
+      <router-link v-else to="/login" class="sidenav-close"><i class="material-icons left">login</i>Login</router-link></li>
     </ul>
 
     <div class="container" v-if="!adminArea">
@@ -82,7 +87,8 @@ $noodle-color: #01579b;
 $secondary-color: $noodle-color;
 
 @import "~materialize-css";
-@import "~material-design-icons/iconfont/material-icons.css";
+$material-design-icons-font-path: '~@material-design-icons/font/';
+@import "~@material-design-icons/font/filled.css";
 
 .theme-background {
   background: var(--noodle-color);

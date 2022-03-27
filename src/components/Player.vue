@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="card">
+      <a name="attendance" />
       <div class="card-content">
         <div class="input-field input-name">
           <i class="material-icons prefix">face</i>
