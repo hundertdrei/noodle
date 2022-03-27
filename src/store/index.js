@@ -182,13 +182,7 @@ export default new Vuex.Store({
       state.seasons = _.keyBy(seasons, o => o.date);
     },
     updateSeason (state, season) {
-      let key = _.findKey(state.seasons, o => o.date == season.date);
-
-      if (key === undefined) {
-        key = dayjs(season.date).isoWeek() + 100 * dayjs(season.date).isoWeekYear()
-      }
-      
-      Vue.set(state.seasons, key, season)
+      Vue.set(state.seasons, season.date, season)
     },
     deleteSeason(state, id) {
       let key = _.findKey(state.seasons, o => o.seasonId == id);
