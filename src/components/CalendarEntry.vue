@@ -1,6 +1,8 @@
 <template>
   <div
     class="calendar-entry"
+    @mouseenter="showDetails"
+    @mouseleave="hideDetails"
     :class="{
       green: attend === true,
       red: attend === false,
@@ -8,7 +10,7 @@
     }"
     @click="toggleAttendance({trainingId: trainingId, old: attend})"
   >
-    <div class="more-info" @click="showDetails" ref="more-info">
+    <div class="more-info" @click="showDetails" ref="more-info" :class="{'changed': this.changed}">
       <i class="material-icons">info_outline</i>
     </div>
     <div class="text-bold">
@@ -16,7 +18,20 @@
       <span class="training-title">{{ data.course.titleShort }}</span>
     </div>
     <div class="training-details" v-if="details">
-      {{ data }}
+     <div>
+       <b>{{ data.course.title }}</b>
+     </div>
+      <div>
+        <Alt :x="data.course.location" :y="data.location"/>
+      </div>
+      <div>
+        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/>
+         - 
+        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
+      </div>
+      <div>
+        <Alt :x="data.course.comment" :y="data.comment"/>
+      </div>
     </div>
   </div>
 </template>e
@@ -36,17 +51,28 @@ export default {
       ...mapActions(["toggleAttendance"]),
       showDetails () {
         this.details = true;
+      },
+      hideDetails () {
+        this.details = false;
       }
   },
   computed: {
     formatTime () {
       return function (x) { return this.$options.filters.timejs(x, "HH:mm") }
+    },
+    changed () {
+      console.log(this.data.comment);
+
+      return this.data.location !== null ||
+         this.data.timeBegin !== null ||
+         this.data.timeEnd !== null ||
+         this.data.comment !== undefined;
     }
   },
   mounted () {
     window.addEventListener("click", (e) => {
       if (!this.$refs["more-info"].contains(e.target)) {
-        this.details = false;
+        this.hideDetails()
       }
     })
   }
@@ -57,6 +83,7 @@ export default {
 .calendar-entry {
   padding: 0.5em 1em;
   cursor: pointer;
+  position: relative;
 }
 
 .calendar-entry:hover {
@@ -85,9 +112,18 @@ export default {
   color: var(--color-gray1);
 }
 
+.more-info.changed i {
+  color: red;
+}
+
 .training-details {
+  padding: 0.5em 1em;
   position: absolute;
+  left: min(200px, 50%);
+  top: 30px;
+  width: min(200px, 100%);
   background: white;
-  border: 1px black solid;
+  border: 1px var(--color-gray1) solid;
+  z-index: 100;
 }
 </style>
