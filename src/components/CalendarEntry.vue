@@ -8,16 +8,16 @@
       red: attend === false,
       'white-text': attend !== null,
     }"
-    @click="toggleAttendance({trainingId: trainingId, old: attend})"
+    @click="toggleAttendanceLocal"
   >
-    <div class="more-info" @click="showDetails" ref="more-info" :class="{'changed': this.changed}">
+    <div class="more-info" @click="showDetails" ref="more-info" :class="{'red-text': attend !== false && this.changed, 'black-text': attend === false && this.changed}">
       <i class="material-icons">info_outline</i>
     </div>
     <div class="text-bold">
       <span class="training-date">{{ data.trainingDate | dayjs("dateshort") }}</span>&nbsp;
       <span class="training-title">{{ data.course.titleShort }}</span>
     </div>
-    <div class="training-details" v-if="details">
+    <div class="training-details black-text" v-if="details">
      <div>
        <b>{{ data.course.title }}</b>
      </div>
@@ -54,6 +54,12 @@ export default {
       },
       hideDetails () {
         this.details = false;
+      },
+      toggleAttendanceLocal(e) {
+        let moreInfo = this.$refs["more-info"];
+        if (!moreInfo.contains(e.target)) {
+          this.toggleAttendance({trainingId: this.trainingId, old: this.attend})
+        }
       }
   },
   computed: {
@@ -61,8 +67,6 @@ export default {
       return function (x) { return this.$options.filters.timejs(x, "HH:mm") }
     },
     changed () {
-      console.log(this.data.comment);
-
       return this.data.location !== null ||
          this.data.timeBegin !== null ||
          this.data.timeEnd !== null ||
@@ -70,8 +74,9 @@ export default {
     }
   },
   mounted () {
+    let moreInfo = this.$refs["more-info"]
     window.addEventListener("click", (e) => {
-      if (!this.$refs["more-info"].contains(e.target)) {
+      if (!moreInfo.contains(e.target)) {
         this.hideDetails()
       }
     })
@@ -83,7 +88,6 @@ export default {
 .calendar-entry {
   padding: 0.5em 1em;
   cursor: pointer;
-  position: relative;
 }
 
 .calendar-entry:hover {
@@ -104,24 +108,19 @@ export default {
 
 .more-info {
   float: right;
-  display: infalseline;
+  color: var(--color-gray1);
 }
 
 .more-info i {
   font-size: 1.4em;
-  color: var(--color-gray1);
+  font-weight: bold;
 }
 
-.more-info.changed i {
-  color: red;
-}
 
 .training-details {
   padding: 0.5em 1em;
   position: absolute;
-  left: min(200px, 50%);
-  top: 30px;
-  width: min(200px, 100%);
+  width: 40%;
   background: white;
   border: 1px var(--color-gray1) solid;
   z-index: 100;
