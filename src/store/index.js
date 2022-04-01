@@ -124,7 +124,9 @@ export default new Vuex.Store({
     updateTrainings (state, trainings) {
       state.trainings = _.sortBy(trainings, [
         o => o.trainingDate,
-        o => o.timeBegin || o.course.timeBegin
+        o => o.timeBegin || o.course.timeBegin,
+        o => o.timeEnd || o.course.timeEnd,
+        o => o.course.title
       ])
     },
     setPlayerAttendance (state, attendance) {
