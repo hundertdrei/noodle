@@ -75,7 +75,8 @@ export default new Vuex.Store({
     attendance: [],
     courses: [],
     seasons: {},
-    pendingRefreshTimeout: null
+    pendingRefreshTimeout: null,
+    lastPlayerToast: null,
   },
   getters: {
     calendar (state) {
@@ -209,6 +210,9 @@ export default new Vuex.Store({
 
       Vue.delete(state.seasons, key)
     },
+    setToast(state, toast) {
+      state.lastToast = toast;
+    }
   },
   actions: {
     getNextTrainings ({ commit, dispatch, state }) {
@@ -328,8 +332,18 @@ export default new Vuex.Store({
       commit('updatePlayer', player)
       dispatch('getPlayerAttendance')
     },
+    /* Pops up a toast, but also dismisses any previous 'singular' toast,
+       ie only one is visible at any time */
+    popupSingularToast({ commit, state }, message) {
+      if (state.lastToast != null) state.lastToast.dismiss();
+      let toast = M.toast({ html: message });
+      commit('setToast', toast);
+  },
     async toggleAttendance({ commit, dispatch, state }, { trainingId, old} ) {
-      if (!state.player || state.player.name.trim() == "") return;
+      if (!state.player || state.player.name.trim() == "") {
+        dispatch('popupSingularToast', 'Es muss zuerst ein Name eingegeben werden!');
+        return;
+      }
       
       if (state.player.playerId == -1) {
         await dispatch('savePlayer', {name: state.player.name})
