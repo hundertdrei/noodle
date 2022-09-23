@@ -129,3 +129,24 @@ After changing the Hasura schema in the console you need to update it in the pro
    ```
    docker cp noodle-api:/metadata graphql/
    ```
+   
+## Use dummy database
+
+1. Dump database
+
+```
+docker exec -it postgres bash
+pg_dump -U admin -w --data-only -t 'dim*' -t 'fact*' > dump.sql
+exit
+docker cp postgres:dump.sql .
+```
+
+2. Place under `./db/init/z-data.sql`
+3. Restart, rebuild containers
+
+```
+docker-compose stop
+docker-compose rm
+docker-compose build
+docker-compose up
+```
