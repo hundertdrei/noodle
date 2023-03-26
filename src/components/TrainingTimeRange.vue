@@ -15,7 +15,6 @@ export default {
   props: ["defaultObj", "altObj"],
   computed: {
     showAlternative () {
-        console.log(this.altObj, this.altObj.timeBegin, this.altObj.timeEnd)
         return this.altObj && (this.altObj.timeBegin || this.altObj.timeEnd)
     },
     formatTime () {
