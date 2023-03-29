@@ -8,9 +8,7 @@
         <Alt :x="data.course.location" :y="data.location"/>
       </div>
       <div>
-        <Alt :x="data.course.timeBegin" :y="data.timeBegin" :format="formatTime"/>
-         - 
-        <Alt :x="data.course.timeEnd" :y="data.timeEnd" :format="formatTime"/>
+        <TrainingTimeRange :defaultObj="data.course" :altObj="data" />
       </div>
       <div>
         <Alt :x="data.course.comment" :y="data.comment"/>
@@ -46,10 +44,14 @@
 
 <script>
 import _ from 'lodash'
+import TrainingTimeRange from "@/components/TrainingTimeRange"
 
 export default {
   name: "Training",
   props: ["data"],
+  components: {
+    TrainingTimeRange
+  },
   data () {
     return {
       collapseAttending: false,
